@@ -85,7 +85,7 @@ int main()
 			updateGame(grid, maze, spot, key, message);
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
-	} while (key != QUIT);	  // while user does not want to quit
+	} while (toupper(key) != QUIT);	  // while user does not want to quit
 
 	renderGame(grid, message); // display game info, modified grid and messages
 	endProgram();			   // display final message
