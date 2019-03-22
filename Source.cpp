@@ -213,6 +213,14 @@ void setKeyDirection(const int key, int& dx, int& dy)
 		dx = +1;	//increase the X coordinate
 		dy = 0;
 		break;
+	case UP:
+		dx = 0;
+		dy = -1;
+		break;
+	case DOWN:
+		dx = 0;
+		dy = +1;
+		break;
 //TODO: Set up UP and DOWN arrow keys too
 	}
 }
@@ -230,7 +238,7 @@ int getKeyPress()
 bool isArrowKey(const int key)
 {	//check if the key pressed is an arrow key (also accept 'K', 'M', 'H' and 'P')
 //TODO: Detect UP and DOWN arrow keys as well
-	return (key == LEFT) || (key == RIGHT);
+	return (key == LEFT) || (key == RIGHT) || (key == UP) || (key == DOWN);
 }
 bool wantsToQuit(const int key)
 {	//check if the user wants to quit (when key is 'Q' or 'q')
