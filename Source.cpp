@@ -307,12 +307,13 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	//TODO: Show other options availables when ready...
 	showMessage(clRed, clYellow, 40, 3, "TO MOVE - USE KEYBOARD ARROWS ");
 	showMessage(clRed, clYellow, 40, 4, "TO QUIT - ENTER 'Q'           ");
-
+	
 	//print auxiliary messages if any
 	showMessage(clBlack, clWhite, 40, 8, mess); //display current message
 
-	//TODO: Show your course, your group number and names on screen
-
+	showMessage(clGreen, clWhite, 40, 5, "SE3_8");
+	showMessage(clGreen, clWhite, 40, 6, "Joshua Sexton-Jones");
+	showMessage(clGreen, clWhite, 40, 7, "Chris Brewster");
 	//display grid contents
 	paintGrid(g);
 }
