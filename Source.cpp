@@ -256,7 +256,6 @@ int getKeyPress()
 bool isArrowKey(const int key)
 {
 	// check if the key pressed is an arrow key (also accept 'K', 'M', 'H' and 'P')
-	// TODO: Detect UP and DOWN arrow keys as well
 	return (key == LEFT) || (key == RIGHT) || (key == UP) || (key == DOWN);
 }
 
