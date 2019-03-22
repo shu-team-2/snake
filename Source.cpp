@@ -79,7 +79,7 @@ int main()
 	do // game loop
 	{
 		renderGame(grid, message); // display game info, modified grid and messages
-		// TODO: Ensure command letters are not  case sensitive
+
 		key = getKeyPress(); // read in  selected key: arrow or letter command
 		if (isArrowKey(key))
 			updateGame(grid, maze, spot, key, message);
@@ -239,7 +239,6 @@ void setKeyDirection(const int key, int &dx, int &dy)
 		dx = 0;
 		dy = +1;
 		break;
-		//TODO: Set up UP and DOWN arrow keys too
 	}
 }
 
