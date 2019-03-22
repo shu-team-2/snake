@@ -85,7 +85,7 @@ int main()
 			updateGame(grid, maze, spot, key, message);
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
-	} while (!wantsToQuit(key));	  // while user does not want to quit
+	} while (key != QUIT);	  // while user does not want to quit
 
 	renderGame(grid, message); // display game info, modified grid and messages
 	endProgram();			   // display final message
@@ -259,12 +259,6 @@ bool isArrowKey(const int key)
 	// check if the key pressed is an arrow key (also accept 'K', 'M', 'H' and 'P')
 	// TODO: Detect UP and DOWN arrow keys as well
 	return (key == LEFT) || (key == RIGHT) || (key == UP) || (key == DOWN);
-}
-bool wantsToQuit(const int key)
-{
-	// check if the user wants to quit (when key is 'Q' or 'q')
-	// TODO: Ensure both 'Q' and 'q' are detected
-	return key == QUIT;
 }
 
 //---------------------------------------------------------------------------
