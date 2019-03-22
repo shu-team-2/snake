@@ -67,7 +67,7 @@ int main()
 	// local variable declarations
 	char grid[SIZEY][SIZEX];		  // grid for display
 	char maze[SIZEY][SIZEX];		  // structure of the maze
-	Item spot = {0, 0, SPOT};		  // spot's position and symbol
+	Item spot = { 0, 0, SPOT };		  // spot's position and symbol
 	string message("LET'S START..."); // current message to player
 
 	//action...
@@ -122,7 +122,7 @@ void setInitialMazeStructure(char maze[][SIZEX])
 	// TODO: Amend initial maze configuration (change size changed and inner walls)
 	// initialise maze configuration
 	char initialMaze[SIZEY][SIZEX] //local array to store the maze structure
-		= {{'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
+		= { {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
 		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
 		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
 		   {'#', ' ', ' ', '#', ' ', ' ', ' ', '#', '#', ' ', ' ', '#'},
@@ -131,7 +131,7 @@ void setInitialMazeStructure(char maze[][SIZEX])
 		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
 		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
 		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}};
+		   {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'} };
 
 	// with '#' for wall, ' ' for tunnel, etc.
 	// copy into maze structure with appropriate symbols
@@ -139,7 +139,7 @@ void setInitialMazeStructure(char maze[][SIZEX])
 		for (int col(0); col < SIZEX; ++col)
 			switch (initialMaze[row][col])
 			{
-			// not a direct copy, in case the symbols used are changed
+				// not a direct copy, in case the symbols used are changed
 			case '#':
 				maze[row][col] = WALL;
 				break;
