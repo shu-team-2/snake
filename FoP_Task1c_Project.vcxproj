@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleUtils.cpp" />
-    <ClCompile Include="FoP_Task1c_SKELETON.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="RandomUtils.cpp" />
     <ClCompile Include="TimeUtils.cpp" />
   </ItemGroup>
