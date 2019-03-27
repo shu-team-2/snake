@@ -17,6 +17,7 @@
 #include <cassert>
 #include <string>
 #include <sstream>
+#include <time.h> 
 using namespace std;
 
 //include our own libraries
@@ -232,13 +233,13 @@ void setKeyDirection(const int key, int &dx, int &dy)
 		dx = +1; //increase the X coordinate
 		dy = 0;
 		break;
-	case UP:
-		dx = 0;
-		dy = -1;
+	case UP:	 // when UP arrow pressed...
+		dx = 0;	 
+		dy = -1; // decrease the Y coordinate
 		break;
-	case DOWN:
-		dx = 0;
-		dy = +1;
+	case DOWN:	 // when DOWN arrow pressed...
+		dx = 0;  
+		dy = +1; // increase the Y coordinate
 		break;
 	}
 }
@@ -300,21 +301,25 @@ void renderGame(const char g[][SIZEX], const string &mess)
 
 	//TODO: Display date and time from the system
 	showMessage(clWhite, clRed, 40, 0, "FoP Task 1c - February 2019   ");
+	time_t now = time(0); // getting current system time
+	tm *ltm = localtime(&now); // storing local time in tm attribute
+	showMessage(clWhite, clRed, 40, 1, "Date: "); // showing the message that displays the current date
+	cout << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/";
+	cout << 1900 + ltm->tm_year << "\n";
 
-	//TODO: Show course SE/CS4G/CS, group number, students names and ids
-	showMessage(clWhite, clRed, 40, 1, "Pascale Vacher                ");
+	// displaying group and group members
+	showMessage(clGreen, clWhite, 40, 3, "SE3_8");
+	showMessage(clGreen, clWhite, 40, 4, "Joshua Sexton-Jones");
+	showMessage(clGreen, clWhite, 40, 5, "Chris Brewster");
 
 	//display menu options available
 	//TODO: Show other options availables when ready...
-	showMessage(clRed, clYellow, 40, 3, "TO MOVE - USE KEYBOARD ARROWS ");
-	showMessage(clRed, clYellow, 40, 4, "TO QUIT - ENTER 'Q'           ");
+	showMessage(clRed, clYellow, 40, 6, "TO MOVE - USE KEYBOARD ARROWS ");
+	showMessage(clRed, clYellow, 40, 7, "TO QUIT - ENTER 'Q'           ");
 	
 	//print auxiliary messages if any
 	showMessage(clBlack, clWhite, 40, 8, mess); //display current message
 
-	showMessage(clGreen, clWhite, 40, 5, "SE3_8");
-	showMessage(clGreen, clWhite, 40, 6, "Joshua Sexton-Jones");
-	showMessage(clGreen, clWhite, 40, 7, "Chris Brewster");
 	//display grid contents
 	paintGrid(g);
 }
