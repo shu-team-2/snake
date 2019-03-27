@@ -29,8 +29,8 @@ using namespace std;
 //---------------------------------------------------------------------------
 
 //defining the size of the grid
-const int SIZEX(12); //horizontal dimension
-const int SIZEY(10); //vertical dimension
+const int SIZEX(12); //horizontal dimension (length of border)
+const int SIZEY(10); //vertical dimension (height of border)
 //defining symbols used for display of the grid and content
 const char SPOT('@');   //spot
 const char TUNNEL(' '); //tunnel
@@ -114,6 +114,7 @@ void setSpotInitialCoordinates(Item &spot)
 {
 	// set spot coordinates inside the grid at random at beginning of game
 	// TODO: Ensure Spot does not spwan on inner walls
+
 	spot.y = random(SIZEY - 2); // vertical coordinate in range [1..(SIZEY - 2)]
 	spot.x = random(SIZEX - 2); // horizontal coordinate in range [1..(SIZEX - 2)]
 }
@@ -185,8 +186,6 @@ void updateGameData(const char g[][SIZEX], Item &spot, const int key, string &me
 		spot.x += dx; //go in that X direction
 		break;
 	case WALL:		  //hit a wall and stay there
-					  //TODO: Remove alarm when bumping into walls - too annoying
-		cout << '\a'; //beep the alarm
 		mess = "CANNOT GO THERE!";
 		break;
 	}
