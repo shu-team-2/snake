@@ -47,7 +47,7 @@ const int LEFT(75);  //left arrow
 const char QUIT('Q'); //to end the game
 const char CHEAT('C'); // to cheat 
 string playerName; // global string for holding player names
-
+bool cheatMode = false;
 struct Item
 {
 	int x, y;
@@ -71,6 +71,7 @@ int main()
 	void endProgram();
 	
 	void activateCheat();
+	void deactivateCheat();
 		
 	void getPlayerData(); // get player name prototype
 	getPlayerData(); // get player name function call
@@ -94,6 +95,8 @@ int main()
 		key = getKeyPress(); // read in  selected key: arrow or letter command
 		if (isArrowKey(key))
 			updateGame(grid, maze, spot, key, message);
+		else if (isCheatKey(key) && cheatMode == true) // if the user presses 'C' to deactivate cheat mode
+			deactivateCheat();
 		else if (isCheatKey(key))
 			activateCheat();		// calling the cheat function
 		else
@@ -366,8 +369,16 @@ void getPlayerData()
 void activateCheat()
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-
+	cheatMode = true;
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
+}
+
+void deactivateCheat()
+{
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	cheatMode = false;
+	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
+
 }
 void paintGrid(const char g[][SIZEX])
 {
