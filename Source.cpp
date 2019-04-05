@@ -102,6 +102,9 @@ int main()
 
 void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], Item &spot)
 {
+	void getPlayerName(); // get player name prototype
+	getPlayerName(); // get player name function call
+
 	// initialise grid and place spot in middle
 	void setInitialMazeStructure(char maze[][SIZEX]);
 	void setSpotInitialCoordinates(Item & spot);
@@ -298,10 +301,9 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 	void paintGrid(const char g[][SIZEX]);
 
+
 	//TODO: Change the colour of the messages
 	//display game title
-	showMessage(clBlack, clWhite, 40, 10, "Enter Player Name:");
-	cin >> playerName;
 
 	showMessage(clBlack, clYellow, 0, 0, "___GAME___");
 
@@ -335,6 +337,12 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	paintGrid(g);
 }
 
+void getPlayerName()
+{
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
+	showMessage(clBlack, clWhite, 40, 10, "Enter Player Name:");
+	cin >> playerName;
+}
 void paintGrid(const char g[][SIZEX])
 {
 	// display grid content on screen
