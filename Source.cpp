@@ -45,6 +45,7 @@ const int RIGHT(77); //right arrow
 const int LEFT(75);  //left arrow
 //defining the other command letters
 const char QUIT('Q'); //to end the game
+const char CHEAT('C'); // to cheat 
 string playerName; // global string for holding player names
 
 struct Item
@@ -65,9 +66,12 @@ int main()
 	void updateGame(char g[][SIZEX], const char m[][SIZEX], Item &s, const int kc, string &mess);
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
+	bool isCheatKey(const int key); // creating cheat key prototype
 	int getKeyPress();
 	void endProgram();
-
+	
+	void activateCheat();
+		
 	void getPlayerData(); // get player name prototype
 	getPlayerData(); // get player name function call
 
@@ -90,6 +94,8 @@ int main()
 		key = getKeyPress(); // read in  selected key: arrow or letter command
 		if (isArrowKey(key))
 			updateGame(grid, maze, spot, key, message);
+		else if (isCheatKey(key))
+			activateCheat();		// calling the cheat function
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
 	} while (toupper(key) != QUIT);	  // while user does not want to quit
@@ -119,8 +125,6 @@ void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], Item &spot)
 
 void setSpotInitialCoordinates(Item &spot)
 {
-	
-
 	// set spot coordinates inside the grid at random at beginning of game
 	// TODO: Ensure Spot does not spwan on inner walls
 
@@ -269,6 +273,11 @@ bool isArrowKey(const int key)
 	// check if the key pressed is an arrow key (also accept 'K', 'M', 'H' and 'P')
 	return (key == LEFT) || (key == RIGHT) || (key == UP) || (key == DOWN);
 }
+bool isCheatKey(const int key)
+{
+	// check if the key pressed is cheat key
+	return (key == CHEAT);
+}
 
 //---------------------------------------------------------------------------
 //----- display info on screen
@@ -324,23 +333,26 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	cout << 1900 + ltm->tm_year << "\n";*/
 
 	// displaying group and group members
-	showMessage(clGreen, clWhite, 40, 3, "SE3_8");
-	showMessage(clGreen, clWhite, 40, 4, "Joshua Sexton-Jones");
-	showMessage(clGreen, clWhite, 40, 5, "Chris Brewster");
+	showMessage(clDarkBlue, clWhite, 40, 3, "SE3_8");
+	showMessage(clDarkBlue, clWhite, 40, 4, "Joshua Sexton-Jones");
+	showMessage(clDarkBlue, clWhite, 40, 5, "Chris Brewster");
 
 	//display menu options available
 	//TODO: Show other options availables when ready...
 	showMessage(clRed, clYellow, 40, 6, "TO MOVE - USE KEYBOARD ARROWS ");
 	showMessage(clRed, clYellow, 40, 7, "TO QUIT - ENTER 'Q'           ");
+	showMessage(clRed, clYellow, 40, 8, "TO CHEAT - ENTER 'C'           ");
+	//showMessage(clDarkBlue, clWhite, 40, 11, "CHEAT MODE: DISABLED.");
+
 	
 	//print auxiliary messages if any
-	showMessage(clBlack, clWhite, 40, 8, mess); //display current message
+	showMessage(clBlack, clWhite, 40, 11, mess); //display current message
 
 	//display grid contents
 	paintGrid(g);
 }
-
-void getPlayerData()
+ 
+void getPlayerData() 
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
@@ -348,7 +360,14 @@ void getPlayerData()
 	cout << "Enter your name (Max 20 characters): ";
 	cin >> name;
 	name.resize(20); // resizing the string to first 20 characters
-	showMessage(clRed, clYellow, 40, 10, "PLAYER: " + name);
+	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
+}
+
+void activateCheat()
+{
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+
+	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
 }
 void paintGrid(const char g[][SIZEX])
 {
