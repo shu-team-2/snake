@@ -1,15 +1,3 @@
-//---------------------------------------------------------------------------
-//Program: Skeleton for Task 1c � group assignment
-//Author: Pascale Vacher
-//Last updated: 23 February 2018
-//---------------------------------------------------------------------------
-
-//Go to 'View > Task List' menu to open the 'Task List' pane listing the initial amendments needed to this program
-
-//---------------------------------------------------------------------------
-//----- include libraries
-//---------------------------------------------------------------------------
-
 //include standard libraries
 #include <iostream>
 #include <iomanip>
