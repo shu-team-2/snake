@@ -341,16 +341,13 @@ void renderGame(const char g[][SIZEX], const string &mess)
 
 void getPlayerData()
 {
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
-	showMessage(clBlack, clWhite, 40, 10, "Enter Player Name:"); // showing the message to prompt user to enter name
-	cin >> playerName; // getting input from user
-	while (playerName.length() > 20) // while the input string is greater than 20 characters
-	{
-		cin.clear(); // clearing the cin
-		showMessage(clBlack, clWhite, 40, 10, "Enter Player Name (20 chars max):"); // prompting user for valid input
-		cin >> playerName; // getting player name
-	}
+	string name; // local variable for holding player name
+	cout << "Enter your name (Max 20 characters): ";
+	cin >> name;
+	name.resize(20); // resizing the string to first 20 characters
+	showMessage(clRed, clYellow, 40, 10, "PLAYER: " + name);
 }
 void paintGrid(const char g[][SIZEX])
 {
