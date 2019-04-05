@@ -45,7 +45,7 @@ const int RIGHT(77); //right arrow
 const int LEFT(75);  //left arrow
 //defining the other command letters
 const char QUIT('Q'); //to end the game
-string playerName; // global string for holding player name
+string playerName; // global string for holding player names
 
 struct Item
 {
@@ -67,6 +67,9 @@ int main()
 	bool isArrowKey(const int k);
 	int getKeyPress();
 	void endProgram();
+
+	void getPlayerData(); // get player name prototype
+	getPlayerData(); // get player name function call
 
 	// local variable declarations
 	char grid[SIZEY][SIZEX];		  // grid for display
@@ -102,8 +105,7 @@ int main()
 
 void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], Item &spot)
 {
-	void getPlayerName(); // get player name prototype
-	getPlayerName(); // get player name function call
+	
 
 	// initialise grid and place spot in middle
 	void setInitialMazeStructure(char maze[][SIZEX]);
@@ -337,11 +339,18 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	paintGrid(g);
 }
 
-void getPlayerName()
+void getPlayerData()
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
-	showMessage(clBlack, clWhite, 40, 10, "Enter Player Name:");
-	cin >> playerName;
+
+	showMessage(clBlack, clWhite, 40, 10, "Enter Player Name:"); // showing the message to prompt user to enter name
+	cin >> playerName; // getting input from user
+	while (playerName.length() > 20) // while the input string is greater than 20 characters
+	{
+		cin.clear(); // clearing the cin
+		showMessage(clBlack, clWhite, 40, 10, "Enter Player Name (20 chars max):"); // prompting user for valid input
+		cin >> playerName; // getting player name
+	}
 }
 void paintGrid(const char g[][SIZEX])
 {
