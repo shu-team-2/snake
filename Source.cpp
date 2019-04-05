@@ -96,8 +96,8 @@ int main()
 		if (isArrowKey(key))
 			updateGame(grid, maze, spot, key, message);
 		else if (isCheatKey(key) && cheatMode == true) // if the user presses 'C' to deactivate cheat mode
-			deactivateCheat();
-		else if (isCheatKey(key))
+			deactivateCheat();		// calling deactivate cheat function
+		else if (isCheatKey(key)) // if user presses 'C' key and cheat mode is disabled
 			activateCheat();		// calling the cheat function
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
@@ -371,6 +371,8 @@ void activateCheat()
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 	cheatMode = true;
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
+
+	//TODO: Activate Cheat Mode core functionality
 }
 
 void deactivateCheat()
@@ -378,6 +380,8 @@ void deactivateCheat()
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 	cheatMode = false;
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
+
+	//TODO: Deactivate Cheat Mode core functionality
 
 }
 void paintGrid(const char g[][SIZEX])
