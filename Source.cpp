@@ -45,6 +45,7 @@ const int RIGHT(77); //right arrow
 const int LEFT(75);  //left arrow
 //defining the other command letters
 const char QUIT('Q'); //to end the game
+string playerName; // global string for holding player name
 
 struct Item
 {
@@ -113,6 +114,8 @@ void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], Item &spot)
 
 void setSpotInitialCoordinates(Item &spot)
 {
+	
+
 	// set spot coordinates inside the grid at random at beginning of game
 	// TODO: Ensure Spot does not spwan on inner walls
 
@@ -297,15 +300,23 @@ void renderGame(const char g[][SIZEX], const string &mess)
 
 	//TODO: Change the colour of the messages
 	//display game title
+	showMessage(clBlack, clWhite, 40, 10, "Enter Player Name:");
+	cin >> playerName;
+
 	showMessage(clBlack, clYellow, 0, 0, "___GAME___");
 
 	//TODO: Display date and time from the system
 	showMessage(clWhite, clRed, 40, 0, "FoP Task 1c - February 2019   ");
-	time_t now = time(0); // getting current system time
+	showMessage(clWhite, clRed, 40, 1, getTime()); //outputting current time
+	
+	showMessage(clWhite, clRed, 40, 2, getDate()); // outputting current date
+
+	
+	/*time_t now = time(0); // getting current system time
 	tm *ltm = localtime(&now); // storing local time in tm attribute
 	showMessage(clWhite, clRed, 40, 1, "Date: "); // showing the message that displays the current date
 	cout << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/";
-	cout << 1900 + ltm->tm_year << "\n";
+	cout << 1900 + ltm->tm_year << "\n";*/
 
 	// displaying group and group members
 	showMessage(clGreen, clWhite, 40, 3, "SE3_8");
