@@ -30,8 +30,8 @@ using namespace std;
 //---------------------------------------------------------------------------
 
 //defining the size of the grid
-const int SIZEX(12); //horizontal dimension (length of border)
-const int SIZEY(10); //vertical dimension (height of border)
+const int SIZEX(15); //horizontal dimension (length of border)
+const int SIZEY(11); //vertical dimension (height of border)
 //defining symbols used for display of the grid and content
 const char SPOT('@');   //spot
 const char TUNNEL(' '); //tunnel
@@ -133,17 +133,18 @@ void setInitialMazeStructure(char maze[][SIZEX])
 	// set the position of the walls in the maze
 	// TODO: Amend initial maze configuration (change size changed and inner walls)
 	// initialise maze configuration
-	char initialMaze[SIZEY][SIZEX] //local array to store the maze structure
-		= { {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', ' ', ' ', '#', ' ', ' ', ' ', '#', '#', ' ', ' ', '#'},
-		   {'#', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#'},
-		   {'#', ' ', ' ', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-		   {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'} };
+	char initialMaze[SIZEY][SIZEX] 	//local array to store the maze structure
+		= { { '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#' },
+		{ '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#' },
+		{ '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#' },
+		{ '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
+		{ '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#' } };
 
 	// with '#' for wall, ' ' for tunnel, etc.
 	// copy into maze structure with appropriate symbols
