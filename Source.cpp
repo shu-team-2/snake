@@ -247,7 +247,7 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 		break;
 	case WALL:		  //hit a wall and stay there
 		//mess = "CANNOT GO THERE!";
-		//wantsToQuit(QUIT); // asking if user wants to quit after they hit wall 
+		// wantsToQuit(QUIT); // asking if user wants to quit after they hit wall 
 		endProgram();
 		break;
 	case MOUSE:
