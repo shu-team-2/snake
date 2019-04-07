@@ -18,6 +18,7 @@
 #include <string>
 #include <sstream>
 #include <time.h> 
+#include <vector> // including the vector library for snake :
 using namespace std;
 
 //include our own libraries
@@ -33,11 +34,12 @@ using namespace std;
 const int SIZEX(15); //horizontal dimension (length of border)
 const int SIZEY(11); //vertical dimension (height of border)
 //defining symbols used for display of the grid and content
-const char SPOT('@');   //spot
+const char HEAD('0');   //spot
 const char TUNNEL(' '); //tunnel
 const char WALL('#');   //border
-const char HEAD('0');  // head of snake
 const char BODY('o');  // body of snake
+const char MOUSE('@'); // mouse
+
 //defining the command letters to move the spot on the maze
 const int UP(72);	//up arrow
 const int DOWN(80);  //down arrow
@@ -47,12 +49,15 @@ const int LEFT(75);  //left arrow
 const char QUIT('Q'); //to end the game
 const char CHEAT('C'); // to cheat 
 string playerName; // global string for holding player names
-bool cheatMode = false;
+bool cheatMode = false; // global bool for detecting cheatmode
 struct Item
 {
 	int x, y;
 	char symbol;
 };
+
+vector<Item> snake; // creating the snake vector
+
 
 //---------------------------------------------------------------------------
 //----- run game
@@ -61,31 +66,40 @@ struct Item
 int main()
 {
 	//function declarations (prototypes)
-	void initialiseGame(char g[][SIZEX], char m[][SIZEX], Item &spot);
+	void initialiseGame(char g[][SIZEX], char m[][SIZEX], vector<Item> &snake, Item &mouse);
 	void renderGame(const char g[][SIZEX], const string &mess);
-	void updateGame(char g[][SIZEX], const char m[][SIZEX], Item &s, const int kc, string &mess);
+	void updateGame(char g[][SIZEX], const char m[][SIZEX], const int kc, string &mess, vector<Item>& snake, Item& mouse);
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
 	bool isCheatKey(const int key); // creating cheat key prototype
 	int getKeyPress();
 	void endProgram();
-	
+
 	void activateCheat();
 	void deactivateCheat();
-		
+
 	void getPlayerData(); // get player name prototype
-	getPlayerData(); // get player name function call
 
 	// local variable declarations
 	char grid[SIZEY][SIZEX];		  // grid for display
 	char maze[SIZEY][SIZEX];		  // structure of the maze
-	Item spot = { 0, 0, SPOT };		  // spot's position and symbol
+	Item head = { 4, 4, HEAD };		  // spot's position and symbol
+	Item body = { 1, 1, BODY };		  // body position and symbol
+	Item mouse = { 0, 0, MOUSE };     // mouse position and symbol
+	snake.push_back(head); // pushing head onto snake vector
+	snake.push_back(body); // pushing body onto snake vector
+	snake.push_back(body); //
+	snake.push_back(body); //
+
+
 	string message("LET'S START..."); // current message to player
 
 	//action...
+	getPlayerData(); // get player name function call
+
 	seed(); // seed the random number generator
 	SetConsoleTitle("FoP 2018-19 - Task 1c - Game Skeleton");
-	initialiseGame(grid, maze, spot); // initialise grid (incl. walls and spot)
+	initialiseGame(grid, maze, snake, mouse); // initialise grid (incl. walls and spot)
 	int key;						  // current key selected by player
 
 	do // game loop
@@ -94,7 +108,7 @@ int main()
 
 		key = getKeyPress(); // read in  selected key: arrow or letter command
 		if (isArrowKey(key))
-			updateGame(grid, maze, spot, key, message);
+			updateGame(grid, maze, key, message, snake, mouse);
 		else if (isCheatKey(key) && cheatMode == true) // if the user presses 'C' to deactivate cheat mode
 			deactivateCheat();		// calling deactivate cheat function
 		else if (isCheatKey(key)) // if user presses 'C' key and cheat mode is disabled
@@ -112,27 +126,49 @@ int main()
 //----- initialise game state
 //---------------------------------------------------------------------------
 
-void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], Item &spot)
+void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake, Item &mouse)
 {
-	
+
 
 	// initialise grid and place spot in middle
 	void setInitialMazeStructure(char maze[][SIZEX]);
-	void setSpotInitialCoordinates(Item & spot);
-	void updateGrid(char g[][SIZEX], const char m[][SIZEX], const Item &i);
+	void setSpotInitialCoordinates(vector<Item> &snake); // setting initial head co-ordinates
+	void setBodyInitialCoordinates(vector<Item> &snake); // setting initial body co-ordinates 
+	void setMouseInitialCoordinates(Item &mouse);		 // setting initial mouse co-ordinates
+	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse);
+
 
 	setInitialMazeStructure(maze); // initialise maze
-	setSpotInitialCoordinates(spot);
-	updateGrid(grid, maze, spot); // prepare grid
+	setSpotInitialCoordinates(snake);
+	setBodyInitialCoordinates(snake);
+	setMouseInitialCoordinates(mouse);
+	updateGrid(grid, maze, snake, mouse); // prepare grid
 }
 
-void setSpotInitialCoordinates(Item &spot)
+void setSpotInitialCoordinates(vector<Item> &spot)
 {
 	// set spot coordinates inside the grid at random at beginning of game
 	// TODO: Ensure Spot does not spwan on inner walls
 
-	spot.y = random(SIZEY - 2); // vertical coordinate in range [1..(SIZEY - 2)]
-	spot.x = random(SIZEX - 2); // horizontal coordinate in range [1..(SIZEX - 2)]
+	snake.at(0).y = random(SIZEY - 2); // vertical coordinate in range [1..(SIZEY - 2)] // setting the snake head to spawn at random location
+	snake.at(0).x = random(SIZEX - 2); // horizontal coordinate in range [1..(SIZEX - 2)]  // setting the snake head to spawn at random location
+}
+
+void setMouseInitialCoordinates(Item &mouse)
+{
+	mouse.y = random(SIZEY - 2); // spawning mouse at random location
+	mouse.x = random(SIZEX - 2); // spawning mouse at random location
+}
+
+void setBodyInitialCoordinates(vector<Item> &snake)
+{
+	snake[1].y = snake[0].y;
+	snake[1].x = snake[0].x;
+	snake[2].y = snake[1].y;
+	snake[2].x = snake[1].x;
+	snake[3].y = snake[2].y;
+	snake[3].x = snake[2].x;
+
 }
 
 void setInitialMazeStructure(char maze[][SIZEX])
@@ -173,21 +209,22 @@ void setInitialMazeStructure(char maze[][SIZEX])
 //----- Update Game
 //---------------------------------------------------------------------------
 
-void updateGame(char grid[][SIZEX], const char maze[][SIZEX], Item &spot, const int keyCode, string &mess)
+void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse)
 {
-	// update game
-	void updateGameData(const char g[][SIZEX], Item &s, const int kc, string &m);
-	void updateGrid(char g[][SIZEX], const char maze[][SIZEX], const Item &s);
-	updateGameData(grid, spot, keyCode, mess); //move spot in required direction
-	updateGrid(grid, maze, spot);			   //update grid information
+	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn);
+	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse);
+
+	updateGameData(grid, keyCode, mess, snake);		//move spot in required direction
+	updateGrid(grid, maze, snake, mouse);					//update grid information
 }
-void updateGameData(const char g[][SIZEX], Item &spot, const int key, string &mess)
+void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<Item> &snake)
 {
 	// move spot in required direction
+	bool wantsToQuit(int key); // prototype of wants to quit function
 	bool isArrowKey(const int k);
 	void setKeyDirection(int k, int &dx, int &dy);
 	assert(isArrowKey(key));
-
+	void endProgram();
 	// reset message to blank
 	mess = "";
 
@@ -196,27 +233,48 @@ void updateGameData(const char g[][SIZEX], Item &spot, const int key, string &me
 	setKeyDirection(key, dx, dy);
 
 	// check new target position in grid and update game data (incl. spot coordinates) if move is possible
-	switch (g[spot.y + dy][spot.x + dx])
+	switch (g[snake[0].y + dy][snake[0].x + dx])
 	{				  //...depending on what's on the target position in grid...
 	case TUNNEL:	  //can move
-		spot.y += dy; //go in that Y direction
-		spot.x += dx; //go in that X direction
+		snake[3].y = snake[2].y;
+		snake[3].x = snake[2].x;
+		snake[2].y = snake[1].y;
+		snake[2].x = snake[1].x;
+		snake[1].y = snake[0].y;	
+		snake[1].x = snake[0].x;	
+		snake[0].y += dy;	
+		snake[0].x += dx;	
 		break;
 	case WALL:		  //hit a wall and stay there
-		mess = "CANNOT GO THERE!";
+		//mess = "CANNOT GO THERE!";
+		//wantsToQuit(QUIT); // asking if user wants to quit after they hit wall 
+		endProgram();
+		break;
+	case MOUSE:
+		snake[0].y += dy;	//go in that Y direction
+		snake[0].x += dx;	//go in that X direction
+		//eatMouse(g, snake, mouse, body);
 		break;
 	}
 }
-void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], const Item &spot)
+void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse)
 {
 	// update grid configuration after each move
 	void placeMaze(char g[][SIZEX], const char b[][SIZEX]);
-	void placeItem(char g[][SIZEX], const Item &spot);
+	void placeItem(char g[][SIZEX], vector<Item> &snake);
+	void placeMouse(char g[][SIZEX], Item &mouse);
 
 	placeMaze(grid, maze); //reset the empty maze configuration into grid
-	placeItem(grid, spot); //set spot in grid
+	placeItem(grid, snake); //set snake in grid
+	placeMouse(grid, mouse); // set mouse in grid
 }
 
+// function for placing mouse, on grid
+void placeMouse(char g[][SIZEX], Item &mouse)
+{
+	g[mouse.y][mouse.x] = mouse.symbol;
+
+}
 void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 {
 	// reset the empty/fixed maze configuration into grid
@@ -225,10 +283,27 @@ void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 			grid[row][col] = maze[row][col];
 }
 
-void placeItem(char g[][SIZEX], const Item &item)
+void placeItem(char g[][SIZEX], vector<Item> &snake)
 {
 	// place item at its new position in grid
-	g[item.y][item.x] = item.symbol;
+	g[snake[3].y][snake[3].x] = snake[3].symbol;
+	g[snake[2].y][snake[2].x] = snake[2].symbol;
+	g[snake[1].y][snake[1].x] = snake[1].symbol;
+	g[snake[0].y][snake[0].x] = snake[0].symbol;
+}
+
+// function for eating the mouse
+void eatMouse(char g[][SIZEX], vector<Item> &snake, Item &mouse, Item &body)
+{
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+
+	if (snake[0].x == mouse.x && snake[0].y == mouse.y)
+	{
+		snake.push_back(body);
+		g[snake.back().y][snake.back().x] = snake.back().symbol;
+
+		showMessage(clRed, clYellow, 40, 9, "MOUSE CAUGHT!");
+	}
 }
 //---------------------------------------------------------------------------
 //----- process key
@@ -250,11 +325,11 @@ void setKeyDirection(const int key, int &dx, int &dy)
 		dy = 0;
 		break;
 	case UP:	 // when UP arrow pressed...
-		dx = 0;	 
+		dx = 0;
 		dy = -1; // decrease the Y coordinate
 		break;
 	case DOWN:	 // when DOWN arrow pressed...
-		dx = 0;  
+		dx = 0;
 		dy = +1; // increase the Y coordinate
 		break;
 	}
@@ -325,10 +400,10 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	//TODO: Display date and time from the system
 	showMessage(clWhite, clRed, 40, 0, "FoP Task 1c - February 2019   ");
 	showMessage(clWhite, clRed, 40, 1, getTime()); //outputting current time
-	
+
 	showMessage(clWhite, clRed, 40, 2, getDate()); // outputting current date
 
-	
+
 	/*time_t now = time(0); // getting current system time
 	tm *ltm = localtime(&now); // storing local time in tm attribute
 	showMessage(clWhite, clRed, 40, 1, "Date: "); // showing the message that displays the current date
@@ -347,15 +422,15 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	showMessage(clRed, clYellow, 40, 8, "TO CHEAT - ENTER 'C'           ");
 	//showMessage(clDarkBlue, clWhite, 40, 11, "CHEAT MODE: DISABLED.");
 
-	
+
 	//print auxiliary messages if any
 	showMessage(clBlack, clWhite, 40, 11, mess); //display current message
 
 	//display grid contents
 	paintGrid(g);
 }
- 
-void getPlayerData() 
+
+void getPlayerData()
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
