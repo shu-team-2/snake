@@ -50,6 +50,7 @@ const char QUIT('Q'); //to end the game
 const char CHEAT('C'); // to cheat 
 string playerName; // global string for holding player names
 bool cheatMode = false; // global bool for detecting cheatmode
+int snakeLength = 3;
 struct Item
 {
 	int x, y;
@@ -75,8 +76,8 @@ int main()
 	int getKeyPress();
 	void endProgram();
 
-	void activateCheat();
-	void deactivateCheat();
+	void activateCheat(const char g[][SIZEX], const string &mess);
+		void deactivateCheat();
 
 	void getPlayerData(); // get player name prototype
 
@@ -112,7 +113,7 @@ int main()
 		else if (isCheatKey(key) && cheatMode == true) // if the user presses 'C' to deactivate cheat mode
 			deactivateCheat();		// calling deactivate cheat function
 		else if (isCheatKey(key)) // if user presses 'C' key and cheat mode is disabled
-			activateCheat();		// calling the cheat function
+			activateCheat(grid, message);		// calling the cheat function
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
 	} while (toupper(key) != QUIT);	  // while user does not want to quit
@@ -353,6 +354,7 @@ bool isArrowKey(const int key)
 }
 bool isCheatKey(const int key)
 {
+
 	// check if the key pressed is cheat key
 	return (key == CHEAT);
 }
@@ -441,13 +443,20 @@ void getPlayerData()
 	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
 }
 
-void activateCheat()
+void activateCheat(const char g[][SIZEX], const string &mess)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-	cheatMode = true;
+	void renderGame(const char g[][SIZEX], const string &mess);
+
+
+	cheatMode = true; // setting global cheat bool to true
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
+	//snake.erase(snake.begin(), snake.begin() + 3);
+	snake.erase(snake.begin(), snake.end()), snakeLength;
+	renderGame(g, mess);// rendering the game
 
 	//TODO: Activate Cheat Mode core functionality
+	
 }
 
 void deactivateCheat()
