@@ -51,7 +51,7 @@ const char QUIT('Q'); //to end the game
 const char CHEAT('C'); // to cheat 
 string playerName; // global string for holding player names
 bool cheatMode = false; // global bool for detecting cheatmode
-int snakeLength = 3;
+int snakeSize; // global variable for storing the snake length, so correct amount of body parts can be added to snake when cheat is deactivated
 struct Item
 {
 	int x, y;
@@ -77,8 +77,8 @@ int main()
 	int getKeyPress();
 	void endProgram();
 
-	void activateCheat(char g[][SIZEX], const string &mess, vector<Item> &snake, Item &body);
-		void deactivateCheat();
+	void activateCheat(char g[][SIZEX], vector<Item> &snake);
+		void deactivateCheat(char g[][SIZEX], vector<Item> &snake);
 
 	void getPlayerData(); // get player name prototype
 
@@ -92,6 +92,7 @@ int main()
 	snake.push_back(body); // pushing body onto snake vector
 	snake.push_back(body); //
 	snake.push_back(body); //
+	snake.push_back(body);
 
 
 	string message("LET'S START..."); // current message to player
@@ -112,10 +113,10 @@ int main()
 		if (isArrowKey(key))
 			updateGame(grid, maze, key, message, snake, mouse);
 		else if (isCheatKey(key) && cheatMode == true) // if the user presses 'C' to deactivate cheat mode
-			deactivateCheat();		// calling deactivate cheat function
+			deactivateCheat(grid, snake);		// calling deactivate cheat function
 		else if (isCheatKey(key)) // if user presses 'C' key and cheat mode is disabled
 		{
-			activateCheat(grid, message, snake, body);		// calling the cheat function
+			activateCheat(grid, snake);		// calling the cheat function
 		}
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
@@ -247,15 +248,7 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 			snake[i].y = snake[i - 1].y;
 			snake[i].x = snake[i - 1].x;			
 		}
-	/*	snake[4].y = snake[3].y;
-		snake[4].x = snake[3].x;
-		snake[3].y = snake[2].y;
-		snake[3].x = snake[2].x;
-		snake[2].y = snake[1].y;
-		snake[2].x = snake[1].x;
-
-		snake[1].y = snake[0].y;	
-		snake[1].x = snake[0].x;	*/
+	
 		snake[0].y += dy;
 		snake[0].x += dx;
 		
@@ -463,40 +456,34 @@ void getPlayerData()
 	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
 }
 
-void activateCheat(char g[][SIZEX], const string &mess, vector<Item> &snake, Item &body)
+void activateCheat(char g[][SIZEX], vector<Item> &snake)
 {
 	void placeItem(char g[][SIZEX], vector<Item> &snake);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-	//void renderGame(const char g[][SIZEX], const string &mess);
-	//void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<Item> &snake)
+	
+	snakeSize = static_cast<int>(snake.size());	 // getting the size of the snake
 
 	cheatMode = true; // setting global cheat bool to true
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
-	//snake.erase(remove(snake.begin(), snake.end(), 4), snake.end());
-	snake.erase(snake.begin() + 1, snake.begin() + 4);
-		///snake.push_back(body);
+
+	snake.erase(snake.begin() + 1, snake.begin() + snakeSize); // erasing the first 3 body parts of snake
 	placeItem(g, snake);
-	//snake.erase(remove_if(snake.begin(), snake.end(),
-		//[bodyToRemove](Item * i) { return i && (*i == bodyToRemove); }));
-	//snake.clear();
-	
-	// snake.erase(snake.begin(), snake.end()), body;
-	//snake.erase(snake.begin(), snake.end()), snakeLength;
-	// void updateGameData();
-
-	//renderGame(g, mess);// rendering the game
-
-	//TODO: Activate Cheat Mode core functionality
 	
 }
 
-void deactivateCheat()
+void deactivateCheat(char g[][SIZEX], vector<Item> &snake)
 {
+	void placeItem(char g[][SIZEX], vector<Item> &snake);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+
 	cheatMode = false;
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
-
 	//TODO: Deactivate Cheat Mode core functionality
+	for (int i = 0; i < snakeSize - 1; i++)
+	{
+		snake.push_back(body);
+	}
+	placeItem(g, snake);
 
 }
 void paintGrid(const char g[][SIZEX])
