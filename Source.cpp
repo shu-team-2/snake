@@ -18,7 +18,8 @@
 #include <string>
 #include <sstream>
 #include <time.h> 
-#include <vector> // including the vector library for snake :
+#include <vector> // including the vector library for snake 
+#include <algorithm>
 using namespace std;
 
 //include our own libraries
@@ -58,7 +59,7 @@ struct Item
 };
 
 vector<Item> snake; // creating the snake vector
-
+Item body = { 1, 1, BODY };		  // body position and symbol
 
 //---------------------------------------------------------------------------
 //----- run game
@@ -76,7 +77,7 @@ int main()
 	int getKeyPress();
 	void endProgram();
 
-	void activateCheat(const char g[][SIZEX], const string &mess);
+	void activateCheat(char g[][SIZEX], const string &mess, vector<Item> &snake, Item &body);
 		void deactivateCheat();
 
 	void getPlayerData(); // get player name prototype
@@ -85,7 +86,7 @@ int main()
 	char grid[SIZEY][SIZEX];		  // grid for display
 	char maze[SIZEY][SIZEX];		  // structure of the maze
 	Item head = { 4, 4, HEAD };		  // spot's position and symbol
-	Item body = { 1, 1, BODY };		  // body position and symbol
+	
 	Item mouse = { 0, 0, MOUSE };     // mouse position and symbol
 	snake.push_back(head); // pushing head onto snake vector
 	snake.push_back(body); // pushing body onto snake vector
@@ -113,7 +114,9 @@ int main()
 		else if (isCheatKey(key) && cheatMode == true) // if the user presses 'C' to deactivate cheat mode
 			deactivateCheat();		// calling deactivate cheat function
 		else if (isCheatKey(key)) // if user presses 'C' key and cheat mode is disabled
-			activateCheat(grid, message);		// calling the cheat function
+		{
+			activateCheat(grid, message, snake, body);		// calling the cheat function
+		}
 		else
 			message = "INVALID KEY!"; // set 'Invalid key' message
 	} while (toupper(key) != QUIT);	  // while user does not want to quit
@@ -129,8 +132,6 @@ int main()
 
 void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake, Item &mouse)
 {
-
-
 	// initialise grid and place spot in middle
 	void setInitialMazeStructure(char maze[][SIZEX]);
 	void setSpotInitialCoordinates(vector<Item> &snake); // setting initial head co-ordinates
@@ -163,12 +164,13 @@ void setMouseInitialCoordinates(Item &mouse)
 
 void setBodyInitialCoordinates(vector<Item> &snake)
 {
-	snake[1].y = snake[0].y;
-	snake[1].x = snake[0].x;
-	snake[2].y = snake[1].y;
-	snake[2].x = snake[1].x;
-	snake[3].y = snake[2].y;
-	snake[3].x = snake[2].x;
+	
+	//snake[1].y = snake[0].y;
+	//snake[1].x = snake[0].x;
+	//snake[2].y = snake[1].y;
+	//snake[2].x = snake[1].x;
+	//snake[3].y = snake[2].y;
+	//snake[3].x = snake[2].x;
 
 }
 
@@ -226,6 +228,8 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 	void setKeyDirection(int k, int &dx, int &dy);
 	assert(isArrowKey(key));
 	void endProgram();
+
+	int size = static_cast<int>(snake.size());	 // getting the size of the snake
 	// reset message to blank
 	mess = "";
 
@@ -237,14 +241,24 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 	switch (g[snake[0].y + dy][snake[0].x + dx])
 	{				  //...depending on what's on the target position in grid...
 	case TUNNEL:	  //can move
+
+		for (int i = size - 1; i > 0; i--)
+		{
+			snake[i].y = snake[i - 1].y;
+			snake[i].x = snake[i - 1].x;			
+		}
+	/*	snake[4].y = snake[3].y;
+		snake[4].x = snake[3].x;
 		snake[3].y = snake[2].y;
 		snake[3].x = snake[2].x;
 		snake[2].y = snake[1].y;
 		snake[2].x = snake[1].x;
+
 		snake[1].y = snake[0].y;	
-		snake[1].x = snake[0].x;	
-		snake[0].y += dy;	
-		snake[0].x += dx;	
+		snake[1].x = snake[0].x;	*/
+		snake[0].y += dy;
+		snake[0].x += dx;
+		
 		break;
 	case WALL:		  //hit a wall and stay there
 		//mess = "CANNOT GO THERE!";
@@ -286,11 +300,17 @@ void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 
 void placeItem(char g[][SIZEX], vector<Item> &snake)
 {
+	int size = static_cast<int>(snake.size());	 // getting the size of the snake
 	// place item at its new position in grid
-	g[snake[3].y][snake[3].x] = snake[3].symbol;
+	for (int i = 0; i < size; i++)
+	{
+		g[snake[i].y][snake[i].x] = snake[i].symbol;
+	}
+
+	/*g[snake[3].y][snake[3].x] = snake[3].symbol;
 	g[snake[2].y][snake[2].x] = snake[2].symbol;
 	g[snake[1].y][snake[1].x] = snake[1].symbol;
-	g[snake[0].y][snake[0].x] = snake[0].symbol;
+	g[snake[0].y][snake[0].x] = snake[0].symbol;*/
 }
 
 // function for eating the mouse
@@ -443,17 +463,28 @@ void getPlayerData()
 	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
 }
 
-void activateCheat(const char g[][SIZEX], const string &mess)
+void activateCheat(char g[][SIZEX], const string &mess, vector<Item> &snake, Item &body)
 {
+	void placeItem(char g[][SIZEX], vector<Item> &snake);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-	void renderGame(const char g[][SIZEX], const string &mess);
-
+	//void renderGame(const char g[][SIZEX], const string &mess);
+	//void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<Item> &snake)
 
 	cheatMode = true; // setting global cheat bool to true
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
-	//snake.erase(snake.begin(), snake.begin() + 3);
-	snake.erase(snake.begin(), snake.end()), snakeLength;
-	renderGame(g, mess);// rendering the game
+	//snake.erase(remove(snake.begin(), snake.end(), 4), snake.end());
+	snake.erase(snake.begin() + 1, snake.begin() + 4);
+		///snake.push_back(body);
+	placeItem(g, snake);
+	//snake.erase(remove_if(snake.begin(), snake.end(),
+		//[bodyToRemove](Item * i) { return i && (*i == bodyToRemove); }));
+	//snake.clear();
+	
+	// snake.erase(snake.begin(), snake.end()), body;
+	//snake.erase(snake.begin(), snake.end()), snakeLength;
+	// void updateGameData();
+
+	//renderGame(g, mess);// rendering the game
 
 	//TODO: Activate Cheat Mode core functionality
 	
