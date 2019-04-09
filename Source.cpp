@@ -78,7 +78,7 @@ int main()
 	void endProgram();
 
 	void activateCheat(char g[][SIZEX], vector<Item> &snake);
-		void deactivateCheat(char g[][SIZEX], vector<Item> &snake);
+	void deactivateCheat(char g[][SIZEX], vector<Item> &snake);
 
 	void getPlayerData(); // get player name prototype
 
@@ -92,7 +92,6 @@ int main()
 	snake.push_back(body); // pushing body onto snake vector
 	snake.push_back(body); //
 	snake.push_back(body); //
-	snake.push_back(body);
 
 
 	string message("LET'S START..."); // current message to player
@@ -215,18 +214,20 @@ void setInitialMazeStructure(char maze[][SIZEX])
 
 void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse)
 {
-	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn);
+	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse);
 	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse);
 
-	updateGameData(grid, keyCode, mess, snake);		//move spot in required direction
+	updateGameData(grid, keyCode, mess, snake, mouse);		//move spot in required direction
 	updateGrid(grid, maze, snake, mouse);					//update grid information
 }
-void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<Item> &snake)
+void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse)
 {
 	// move spot in required direction
 	bool wantsToQuit(int key); // prototype of wants to quit function
 	bool isArrowKey(const int k);
 	void setKeyDirection(int k, int &dx, int &dy);
+	void eatMouse(vector<Item> &snake, Item &mouse);
+
 	assert(isArrowKey(key));
 	void endProgram();
 
@@ -261,7 +262,7 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 	case MOUSE:
 		snake[0].y += dy;	//go in that Y direction
 		snake[0].x += dx;	//go in that X direction
-		//eatMouse(g, snake, mouse, body);
+		eatMouse(snake, mouse);
 		break;
 	}
 }
@@ -300,23 +301,21 @@ void placeItem(char g[][SIZEX], vector<Item> &snake)
 		g[snake[i].y][snake[i].x] = snake[i].symbol;
 	}
 
-	/*g[snake[3].y][snake[3].x] = snake[3].symbol;
-	g[snake[2].y][snake[2].x] = snake[2].symbol;
-	g[snake[1].y][snake[1].x] = snake[1].symbol;
-	g[snake[0].y][snake[0].x] = snake[0].symbol;*/
 }
 
 // function for eating the mouse
-void eatMouse(char g[][SIZEX], vector<Item> &snake, Item &mouse, Item &body)
+void eatMouse(vector<Item> &snake, Item &mouse)
 {
+	void setMouseInitialCoordinates(Item &mouse);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
 	if (snake[0].x == mouse.x && snake[0].y == mouse.y)
 	{
 		snake.push_back(body);
-		g[snake.back().y][snake.back().x] = snake.back().symbol;
+		//g[snake.back().y][snake.back().x] = snake.back().symbol;
 
-		showMessage(clRed, clYellow, 40, 9, "MOUSE CAUGHT!");
+		showMessage(clRed, clYellow, 40, 12, "MOUSE CAUGHT!");
+		setMouseInitialCoordinates(mouse);
 	}
 }
 //---------------------------------------------------------------------------
@@ -407,23 +406,15 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	void paintGrid(const char g[][SIZEX]);
 
 
-	//TODO: Change the colour of the messages
 	//display game title
 
 	showMessage(clBlack, clYellow, 0, 0, "___GAME___");
 
-	//TODO: Display date and time from the system
 	showMessage(clWhite, clRed, 40, 0, "FoP Task 1c - February 2019   ");
 	showMessage(clWhite, clRed, 40, 1, getTime()); //outputting current time
 
 	showMessage(clWhite, clRed, 40, 2, getDate()); // outputting current date
 
-
-	/*time_t now = time(0); // getting current system time
-	tm *ltm = localtime(&now); // storing local time in tm attribute
-	showMessage(clWhite, clRed, 40, 1, "Date: "); // showing the message that displays the current date
-	cout << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/";
-	cout << 1900 + ltm->tm_year << "\n";*/
 
 	// displaying group and group members
 	showMessage(clDarkBlue, clWhite, 40, 3, "SE3_8");
@@ -431,11 +422,9 @@ void renderGame(const char g[][SIZEX], const string &mess)
 	showMessage(clDarkBlue, clWhite, 40, 5, "Chris Brewster");
 
 	//display menu options available
-	//TODO: Show other options availables when ready...
 	showMessage(clRed, clYellow, 40, 6, "TO MOVE - USE KEYBOARD ARROWS ");
 	showMessage(clRed, clYellow, 40, 7, "TO QUIT - ENTER 'Q'           ");
 	showMessage(clRed, clYellow, 40, 8, "TO CHEAT - ENTER 'C'           ");
-	//showMessage(clDarkBlue, clWhite, 40, 11, "CHEAT MODE: DISABLED.");
 
 
 	//print auxiliary messages if any
@@ -484,7 +473,6 @@ void deactivateCheat(char g[][SIZEX], vector<Item> &snake)
 		snake.push_back(body);
 	}
 	placeItem(g, snake);
-
 }
 void paintGrid(const char g[][SIZEX])
 {
