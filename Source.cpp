@@ -159,18 +159,6 @@ void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake,
 	updateGrid(grid, maze, snake, mouse, pill, mousePill); // prepare grid
 }
 
-void setBodyInitialCoordinates(vector<Item> &snake)
-{
-
-	//snake[1].y = snake[0].y;
-	//snake[1].x = snake[0].x;
-	//snake[2].y = snake[1].y;
-	//snake[2].x = snake[1].x;
-	//snake[3].y = snake[2].y;
-	//snake[3].x = snake[2].x;
-
-}
-
 void setInitialMazeStructure(char maze[][SIZEX])
 {
 	// set the position of the walls in the maze
