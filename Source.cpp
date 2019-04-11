@@ -49,6 +49,8 @@ struct Item
 {
 	int x, y;
 	char symbol;
+
+    void place(char grid[][SIZEX]) { grid[y][x] = symbol; }
 };
 
 
@@ -84,7 +86,7 @@ int main()
         {0, 0, BODY},
         {0, 0, BODY},
     };
-    Item pill = { 2, 2, POWERPILL };
+    Item pill = { 0, 0, POWERPILL };
     Item mouse = { 0, 0, MOUSE };
 
     bool cheatMode(false); // detecting cheatmode
@@ -143,19 +145,19 @@ void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake,
         vector<Item> &snake, Item &mouse, Item &pill,
         int &mousePill);
 
+	setInitialMazeStructure(maze); // initialise maze
 
     // init snake, mouse, pill positions
 	// TODO: Ensure Items cannot spwan on inner walls
-    snake.at(0).y = random(SIZEY - 2);
-    snake.at(0).x = random(SIZEX - 2);
+    snake.front().x = random(SIZEX - 2);
+    snake.front().y = random(SIZEY - 2);
 
-    mouse.y = random(SIZEY - 2);
     mouse.x = random(SIZEX - 2);
+    mouse.y = random(SIZEY - 2);
 
-    pill.y = random(SIZEY - 2);
     pill.x = random(SIZEX - 2);
+    pill.y = random(SIZEY - 2);
 
-	setInitialMazeStructure(maze); // initialise maze
 	updateGrid(grid, maze, snake, mouse, pill, mousePill); // prepare grid
 }
 
@@ -257,25 +259,22 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 		snake[0].y += dy;	//go in that Y direction
 		snake[0].x += dx;	//go in that X direction
 		eatPill(snake, pill, snakeSize, mousePill);
-
 		break;
-
 	}
 }
+
 void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &mousePill)
 {
 	// update grid configuration after each move
 	void placeMaze(char g[][SIZEX], const char b[][SIZEX]);
-	void placeItem(char g[][SIZEX], vector<Item> &snake);
-	void placeMouse(char g[][SIZEX], Item &mouse);
-	void placePill(char g[][SIZEX], Item &pill);
+    void placeSnake(char grid[][SIZEX], vector <Item> &snake);
 
 	placeMaze(grid, maze); //reset the empty maze configuration into grid
-	placeItem(grid, snake); //set snake in grid
-	placeMouse(grid, mouse); // set mouse in grid
+    placeSnake(grid, snake);
+    mouse.place(grid); // place mouse
 	if (mousePill == 2)
 	{
-		placePill(grid, pill);
+        pill.place(grid);
 	}
 	else if (mousePill > 2)
 	{
@@ -283,12 +282,6 @@ void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snak
 	}
 }
 
-// function for placing mouse, on grid
-void placeMouse(char g[][SIZEX], Item &mouse)
-{
-	g[mouse.y][mouse.x] = mouse.symbol;
-
-}
 void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 {
 	// reset the empty/fixed maze configuration into grid
@@ -296,20 +289,10 @@ void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 		for (int col(0); col < SIZEX; ++col)
 			grid[row][col] = maze[row][col];
 }
-void placePill(char g[][SIZEX], Item &pill)
-{
-	g[pill.y][pill.x] = pill.symbol;
-}
 
-void placeItem(char g[][SIZEX], vector<Item> &snake)
+void placeSnake(char grid[][SIZEX], vector <Item> &snake)
 {
-	int size = static_cast<int>(snake.size());	 // getting the size of the snake
-	// place item at its new position in grid
-	for (int i = 0; i < size; i++)
-	{
-		g[snake[i].y][snake[i].x] = snake[i].symbol;
-	}
-
+    for (Item &i : snake) { i.place(grid); } // place snake
 }
 
 // function for eating the mouse
@@ -351,13 +334,9 @@ void eatPill(vector<Item> &snake, Item &pill, int &snakeSize, int &mousePill)
 
 void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake)
 {
-	void placePill(char g[][SIZEX], Item &pill);
-	//if (mousePill >= 2) // this eventually needs fixing
-//	{
-	//	placePill(g, pill);
-	//}
-
+	// TODO implement
 }
+
 //---------------------------------------------------------------------------
 //----- process keyCode
 //---------------------------------------------------------------------------
@@ -486,10 +465,10 @@ void getPlayerData()
 	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
 }
 
-void activateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
+void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
-	void placeItem(char g[][SIZEX], vector<Item> &snake);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+    void placeSnake(char grid[][SIZEX], vector <Item> &snake);
 
 	snakeSize = static_cast<int>(snake.size());	 // getting the size of the snake
 
@@ -497,14 +476,14 @@ void activateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &c
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
 
 	snake.erase(snake.begin() + 1, snake.begin() + snakeSize); // erasing the body parts
-	placeItem(g, snake);
-
+    
+    placeSnake(grid, snake);
 }
 
-void deactivateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
+void deactivateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
-	void placeItem(char g[][SIZEX], vector<Item> &snake);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+    void placeSnake(char grid[][SIZEX], vector <Item> &snake);
 
 	cheatMode = false;
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
@@ -513,8 +492,9 @@ void deactivateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool 
 	{
         snake.push_back( {0, 0, BODY} );
 	}
-	placeItem(g, snake);
+    placeSnake(grid, snake);
 }
+
 void paintGrid(const char g[][SIZEX])
 {
 	// display grid content on screen
