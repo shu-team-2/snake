@@ -50,9 +50,17 @@ struct Item
 	int x, y;
 	char symbol;
 
-    void place(char grid[][SIZEX]) { grid[y][x] = symbol; }
-};
+    void place(char grid[][SIZEX]) { grid[y][x] = symbol; } // place item on grid
 
+    void randomise(const char maze[][SIZEX]) // random spawn
+    {
+        do
+        {
+            x = random(SIZEX - 2); // exclude walls
+            y = random(SIZEY - 2);
+        } while (maze[y][x] != TUNNEL);
+    }
+};
 
 //---------------------------------------------------------------------------
 //----- run game
@@ -147,16 +155,14 @@ void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake,
 
 	setInitialMazeStructure(maze); // initialise maze
 
-    // init snake, mouse, pill positions
-	// TODO: Ensure Items cannot spwan on inner walls
-    snake.front().x = random(SIZEX - 2);
-    snake.front().y = random(SIZEY - 2);
+    for (Item &i : snake) // init snake in center
+    {
+        i.x = SIZEX / 2;
+        i.y = SIZEY / 2;
+    }
 
-    mouse.x = random(SIZEX - 2);
-    mouse.y = random(SIZEY - 2);
-
-    pill.x = random(SIZEX - 2);
-    pill.y = random(SIZEY - 2);
+    mouse.randomise(maze); // random spawns
+    pill.randomise(maze);
 
 	updateGrid(grid, maze, snake, mouse, pill, mousePill); // prepare grid
 }
