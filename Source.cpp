@@ -216,7 +216,7 @@ void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode,
 	updateGameData(grid, keyCode, mess, snake, mouse, pill, score, mouseCount, mousePill, snakeSize); // move spot in required direction
     updateGrid(grid, maze, snake, mouse, pill, mousePill);	 // update grid information
 }
-void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize)
+void updateGameData(const char grid[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize)
 {
 	// move spot in required direction
 	bool wantsToQuit(int key); // prototype of wants to quit function
@@ -228,45 +228,35 @@ void updateGameData(const char g[][SIZEX], const int key, string &mess, vector<I
 	assert(isArrowKey(key));
 	void endProgram();
 
-	int size = static_cast<int>(snake.size());	 // getting the size of the snake
 	// reset message to blank
 	mess = "";
 
 	// calculate direction of movement for given keyCode
-	int dx(0), dy(0);
-	setKeyDirection(key, dx, dy);
+	int newX(0), newY(0); // new pos
+	setKeyDirection(key, newX, newY);
+    newX += snake.front().x;
+    newY += snake.front().y;
 
-	// check new target position in grid and update game data (incl. spot coordinates) if move is possible
-	switch (g[snake[0].y + dy][snake[0].x + dx])
-	{				  //...depending on what's on the target position in grid...
-	case TUNNEL:	  //can move
+    if (grid[newY][newX] == WALL || grid[newY][newX] == BODY)
+    {
+        // TODO end game for body
+        mess = "CANNOT GO THERE!";
+        endProgram();
+    }
+    else
+    {
+        for (int i(snake.size() - 1); i > 0; --i) // move snake 
+        {
+            snake.at(i).x = snake.at(i - 1).x; // shift item positions
+            snake.at(i).y = snake.at(i - 1).y;
+        }
 
-		for (int i = size - 1; i > 0; i--)
-		{
-			snake[i].y = snake[i - 1].y;
-			snake[i].x = snake[i - 1].x;
-		}
+        snake.front() = { newX, newY, HEAD }; // new head
 
-		snake[0].y += dy;
-		snake[0].x += dx;
-
-		break;
-	case WALL:		  //hit a wall and stay there
-		//mess = "CANNOT GO THERE!";
-		// wantsToQuit(QUIT); // asking if user wants to quit after they hit wall 
-		endProgram();
-		break;
-	case MOUSE:
-		snake[0].y += dy;	//go in that Y direction
-		snake[0].x += dx;	//go in that X direction
-		eatMouse(snake, mouse, score, mouseCount, mousePill);
-		break;
-	case POWERPILL:
-		snake[0].y += dy;	//go in that Y direction
-		snake[0].x += dx;	//go in that X direction
-		eatPill(snake, pill, snakeSize, mousePill);
-		break;
-	}
+        // other options checks
+        if (grid[newY][newX] == MOUSE) { eatMouse(snake, mouse, score, mouseCount, mousePill); }
+        else if (grid[newY][newX] == POWERPILL) { eatPill(snake, pill, snakeSize, mousePill); }
+    }
 }
 
 void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &mousePill)
