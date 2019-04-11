@@ -222,7 +222,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	bool wantsToQuit(int key); // prototype of wants to quit function
 	bool isArrowKey(const int k);
 	void setKeyDirection(int k, int &dx, int &dy);
-	void eatMouse(vector<Item> &snake, Item &mouse, int &score, int &mouseCount, int &mousePill);
+	void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &mouseCount, int &mousePill);
 	void eatPill(vector<Item> &snake, Item &pill, int &snakeSize, int &mousePill);
 
 	assert(isArrowKey(key));
@@ -245,7 +245,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
     }
     else
     {
-        for (int i(snake.size() - 1); i > 0; --i) // move snake 
+        for (int i(snake.size() - 1); i > 0; --i) // shift snake 
         {
             snake.at(i).x = snake.at(i - 1).x; // shift item positions
             snake.at(i).y = snake.at(i - 1).y;
@@ -254,7 +254,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
         snake.front() = { newX, newY, HEAD }; // new head
 
         // other options checks
-        if (grid[newY][newX] == MOUSE) { eatMouse(snake, mouse, score, mouseCount, mousePill); }
+        if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, mouseCount, mousePill); }
         else if (grid[newY][newX] == POWERPILL) { eatPill(snake, pill, snakeSize, mousePill); }
     }
 }
@@ -292,25 +292,20 @@ void placeSnake(char grid[][SIZEX], vector <Item> &snake)
 }
 
 // function for eating the mouse
-void eatMouse(vector<Item> &snake, Item &mouse, int &score, int &mouseCount, int &mousePill)
+void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &mouseCount, int &mousePill)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
-	if (snake[0].x == mouse.x && snake[0].y == mouse.y)
-	{
-        snake.push_back( {0, 0, BODY} ); // new body
-		//g[snake.back().y][snake.back().x] = snake.back().symbol;
+    snake.push_back(snake.back()); // 2 new bodys
+    snake.push_back(snake.back());
 
-		showMessage(clRed, clYellow, 40, 16, "MOUSE CAUGHT!");
+    mouse.randomise(maze); // new mouse
 
-        mouse.y = random(SIZEY - 2); // new mouse pos
-        mouse.x = random(SIZEX - 2);
-        
-		++score; // increment values
-		++mouseCount;
-		++mousePill; 
+	++score; // increment values
+	++mouseCount;
+	++mousePill; 
 
-	}
+	showMessage(clRed, clYellow, 40, 16, "MOUSE CAUGHT!");
 }
 // function for eating the pill
 void eatPill(vector<Item> &snake, Item &pill, int &snakeSize, int &mousePill)
