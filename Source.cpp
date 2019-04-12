@@ -69,9 +69,9 @@ struct Item
 int main()
 {
 	//function declarations (prototypes)
-	void initialiseGame(char g[][SIZEX], char m[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill);
+	void initialiseGame(char g[][SIZEX], char m[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
 	void renderGame(const char g[][SIZEX], const string &mess, const int &score);
-    void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize);
+    void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode);
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
 	bool isCheatKey(const int key); // creating cheat keyCode prototype
@@ -100,8 +100,7 @@ int main()
     bool cheatMode(false); // detecting cheatmode
     int snakeSize(0);      // storing the snake length, so correct amount of body parts can be added to snake when cheat is deactivated
     int score(0);          // storing score
-    int mouseCount(0);     // storing the amount of mice collected
-    int mousePill(0);      // storing the counter of mice collected (resets at 2)
+    int pillCounter(0);      // storing the counter of mice collected (resets at 2)
 
 	string message("LET'S START..."); // current message to player
 
@@ -110,7 +109,7 @@ int main()
 
 	seed(); // seed the random number generator
 	SetConsoleTitle("FoP 2018-19 - Task 1c - Game Skeleton");
-	initialiseGame(grid, maze, snake, mouse, pill, score, mouseCount, mousePill); // initialise grid (incl. walls and spot)
+	initialiseGame(grid, maze, snake, mouse, pill, score, pillCounter); // initialise grid (incl. walls and spot)
 	
     int keyCode; // current keyCode selected by player
 
@@ -121,8 +120,7 @@ int main()
 		keyCode = getKeyPress(); // read in  selected keyCode: arrow or letter command
 		if (isArrowKey(keyCode))
 		{
-            // char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize
-            updateGame(grid, maze, keyCode, message, snake, mouse, pill, score, mouseCount, mousePill, snakeSize);
+            updateGame(grid, maze, keyCode, message, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode);
 			checkPowerPill(grid, pill, snake); // checking to see if there is 2 mice collected
 		}
 		else if (isCheatKey(keyCode) && cheatMode) // if the user presses 'C' to deactivate cheat mode
@@ -144,14 +142,14 @@ int main()
 //----- initialise game state
 //---------------------------------------------------------------------------
 
-void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill)
+void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter)
 {
 	// initialise grid and place spot in middle
 	void setInitialMazeStructure(char maze[][SIZEX]);
 	void updateGrid(
         char grid[][SIZEX], const char maze[][SIZEX],
         vector<Item> &snake, Item &mouse, Item &pill,
-        int &mousePill);
+        int &score, int &pillCounter);
 
 	setInitialMazeStructure(maze); // initialise maze
 
@@ -164,7 +162,7 @@ void initialiseGame(char grid[][SIZEX], char maze[][SIZEX], vector<Item> &snake,
     mouse.randomise(maze); // random spawns
     pill.randomise(maze);
 
-	updateGrid(grid, maze, snake, mouse, pill, mousePill); // prepare grid
+	updateGrid(grid, maze, snake, mouse, pill, score, pillCounter); // prepare grid
 }
 
 void setInitialMazeStructure(char maze[][SIZEX])
@@ -205,25 +203,25 @@ void setInitialMazeStructure(char maze[][SIZEX])
 //----- Update Game
 //---------------------------------------------------------------------------
 
-void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize)
+void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode)
 {
-	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize);
+	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode);
     void updateGrid(
         char grid[][SIZEX], const char maze[][SIZEX],
         vector<Item> &snake, Item &mouse, Item &pill,
-        int &mousePill);
+        int &score, int &pillCounter);
 
-	updateGameData(grid, keyCode, mess, snake, mouse, pill, score, mouseCount, mousePill, snakeSize); // move spot in required direction
-    updateGrid(grid, maze, snake, mouse, pill, mousePill);	 // update grid information
+	updateGameData(grid, keyCode, mess, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode); // move spot in required direction
+    updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
 }
-void updateGameData(const char grid[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &mouseCount, int &mousePill, int &snakeSize)
+void updateGameData(const char grid[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode)
 {
 	// move spot in required direction
 	bool wantsToQuit(int key); // prototype of wants to quit function
 	bool isArrowKey(const int k);
 	void setKeyDirection(int k, int &dx, int &dy);
-	void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &mouseCount, int &mousePill);
-	void eatPill(vector<Item> &snake, Item &pill, int &snakeSize, int &mousePill);
+	void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode);
+    void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode);
 
 	assert(isArrowKey(key));
 	void endProgram();
@@ -254,12 +252,12 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
         snake.front() = { newX, newY, HEAD }; // new head
 
         // other options checks
-        if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, mouseCount, mousePill); }
-        else if (grid[newY][newX] == POWERPILL) { eatPill(snake, pill, snakeSize, mousePill); }
+        if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, pillCounter, cheatMode); }
+        else if (grid[newY][newX] == POWERPILL) { eatPill(grid, snake, pill, pillCounter, cheatMode); }
     }
 }
 
-void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &mousePill)
+void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter)
 {
 	// update grid configuration after each move
 	void placeMaze(char g[][SIZEX], const char b[][SIZEX]);
@@ -268,14 +266,9 @@ void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snak
 	placeMaze(grid, maze); //reset the empty maze configuration into grid
     placeSnake(grid, snake);
     mouse.place(grid); // place mouse
-	if (mousePill == 2)
-	{
-        pill.place(grid);
-	}
-	else if (mousePill > 2)
-	{
-		mousePill = 0; // resetting mousepill when 3 mice are collected (since pill comes after 2 mice)
-	}
+    
+    // +1 offset prevents spawn when score==0
+    if (pillCounter == 2) { pill.place(grid); }
 }
 
 void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
@@ -288,39 +281,43 @@ void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 
 void placeSnake(char grid[][SIZEX], vector <Item> &snake)
 {
-    for (Item &i : snake) { i.place(grid); } // place snake
+    // place snake backwards so head is visible on spawn
+    for (int i(snake.size() - 1); i >= 0; --i) { snake.at(i).place(grid); }
 }
 
 // function for eating the mouse
-void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &mouseCount, int &mousePill)
+void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-
-    snake.push_back(snake.back()); // 2 new bodys
-    snake.push_back(snake.back());
-
+    
     mouse.randomise(maze); // new mouse
 
 	++score; // increment values
-	++mouseCount;
-	++mousePill; 
+	++pillCounter;
+
+    if (!cheatMode) // dont change snake when cheating
+    {
+        // use body explicitly in case of powerpill
+        Item newBody = { snake.back().x, snake.back().y, BODY };
+
+        snake.push_back(newBody); // 2 new bodys
+        snake.push_back(newBody);
+    }
 
 	showMessage(clRed, clYellow, 40, 16, "MOUSE CAUGHT!");
 }
 // function for eating the pill
-void eatPill(vector<Item> &snake, Item &pill, int &snakeSize, int &mousePill)
+void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-	snakeSize = static_cast<int>(snake.size());	 // getting the size of the snake
+	showMessage(clDarkBlue, clWhite, 40, 15, "POWERPILL: CONSUMED");
+    
+    pill.randomise(grid); // new pill location
 
-	if (snake[0].x == pill.x && snake[0].y == pill.y) // if the snake head eats the pill
-	{
-		mousePill = 0; // resetting value of mouse pill
-		showMessage(clDarkBlue, clWhite, 40, 15, "POWERPILL: CONSUMED");
+    // dont change snake when cheating
+    if (!cheatMode) { snake.resize(1); } // just head
 
-		snake.erase(snake.begin() + 1, snake.begin() + snakeSize -3); // erasing the body parts
-	}
-
+    pillCounter = 0; // reset pill counter
 }
 
 void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake)
@@ -459,31 +456,25 @@ void getPlayerData()
 void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-    void placeSnake(char grid[][SIZEX], vector <Item> &snake);
-
-	snakeSize = static_cast<int>(snake.size());	 // getting the size of the snake
 
 	cheatMode = true; // setting global cheat bool to true
-	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
+	
+    snakeSize = static_cast<int>(snake.size());	 // getting the size of the snake
 
-	snake.erase(snake.begin() + 1, snake.begin() + snakeSize); // erasing the body parts
-    
-    placeSnake(grid, snake);
+    snake.resize(4); // original size
+	
+    showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
 }
 
 void deactivateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-    void placeSnake(char grid[][SIZEX], vector <Item> &snake);
 
 	cheatMode = false;
-	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
-	//TODO: Deactivate Cheat Mode core functionality
-	for (int i = 0; i < snakeSize - 1; i++)
-	{
-        snake.push_back( {0, 0, BODY} );
-	}
-    placeSnake(grid, snake);
+
+    for (int i(0); i < snakeSize - 1; ++i) { snake.push_back(snake.back()); } // replace body
+	
+    showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
 }
 
 void paintGrid(const char g[][SIZEX])
