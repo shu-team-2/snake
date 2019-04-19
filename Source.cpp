@@ -221,7 +221,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	// move spot in required direction
 	bool wantsToQuit(int key); // prototype of wants to quit function
 	bool isArrowKey(const int k);
-	void setKeyDirection(int k, int &dx, int &dy);
+	void setKeyDirection(int k, int &dx, int &dy, int &score);
 	void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode);
     void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode);
 
@@ -233,7 +233,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 
 	// calculate direction of movement for given keyCode
 	int newX(0), newY(0); // new pos
-	setKeyDirection(key, newX, newY);
+	setKeyDirection(key, newX, newY, score);
     newX += snake.front().x;
     newY += snake.front().y;
 
@@ -303,8 +303,7 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
 
         snake.push_back(newBody); // 2 new bodys
         snake.push_back(newBody);
-		++miceCollected; // increment values, also making it so the program only increments score when player is not cheating
-		score += 5;
+		++miceCollected; // increment values, also making it so the program only increments score when player is not cheating	
     }
 	else
 	{
@@ -335,7 +334,7 @@ void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake)
 //---------------------------------------------------------------------------
 //----- process keyCode
 //---------------------------------------------------------------------------
-void setKeyDirection(const int key, int &dx, int &dy)
+void setKeyDirection(const int key, int &dx, int &dy, int &score)
 {
 	// calculate direction indicated by keyCode
 	bool isArrowKey(const int k);
@@ -346,18 +345,22 @@ void setKeyDirection(const int key, int &dx, int &dy)
 	case LEFT:   //when LEFT arrow pressed...
 		dx = -1; //decrease the X coordinate
 		dy = 0;
+		score++;
 		break;
 	case RIGHT:  //when RIGHT arrow pressed...
 		dx = +1; //increase the X coordinate
 		dy = 0;
+		score++;
 		break;
 	case UP:	 // when UP arrow pressed...
 		dx = 0;
 		dy = -1; // decrease the Y coordinate
+		score++;
 		break;
 	case DOWN:	 // when DOWN arrow pressed...
 		dx = 0;
 		dy = +1; // increase the Y coordinate
+		score++;
 		break;
 	}
 }
