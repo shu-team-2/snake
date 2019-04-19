@@ -291,7 +291,7 @@ void placeSnake(char grid[][SIZEX], vector <Item> &snake)
 void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-    
+	void endProgram();
     mouse.randomise(maze); // new mouse
 
 	++pillCounter;
@@ -304,6 +304,10 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
         snake.push_back(newBody); // 2 new bodys
         snake.push_back(newBody);
 		++miceCollected; // increment values, also making it so the program only increments score when player is not cheating	
+		if (miceCollected >= 10)
+		{
+			endProgram();  // ending the game when 10 mice are eaten
+		}
     }
 	else
 	{
@@ -423,7 +427,6 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score)
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 	void paintGrid(const char g[][SIZEX]);
 
-
 	//display game title
 
 	showMessage(clBlack, clYellow, 0, 0, "___GAME___");
@@ -509,6 +512,14 @@ void endProgram()
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 
 	//TODO: Display a message when user chooses to quit
-	showMessage(clRed, clYellow, 40, 17, "");
+	if (miceCollected == 10)
+	{
+		showMessage(clRed, clYellow, 40, 17, "YOU WIN!");
+	}
+	else
+	{
+		showMessage(clRed, clYellow, 40, 17, "YOU LOSE!");
+	}
 	system("pause"); //hold output screen until a keyboard keyCode is hit
+	exit(0); // quitting the program 
 }
