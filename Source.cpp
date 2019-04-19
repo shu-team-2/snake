@@ -294,7 +294,14 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
 	void endProgram();
     mouse.randomise(maze); // new mouse
 
-	++pillCounter;
+	if (pillCounter >= 2)
+	{
+		pillCounter = 0; // resetting pill counter if a 3rd mouse is collected (since the pill needs to spawn after 2 mice are collected)
+	}
+	else
+	{
+		++pillCounter;
+	}
 
     if (!cheatMode) // dont change snake when cheating
     {
@@ -325,7 +332,7 @@ void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pil
     pill.randomise(grid); // new pill location
 
     // dont change snake when cheating
-    if (!cheatMode) { snake.resize(1); } // just head
+    if (!cheatMode) { snake.resize(4); } // just head
 
     pillCounter = 0; // reset pill counter
 }
