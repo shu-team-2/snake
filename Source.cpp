@@ -43,6 +43,8 @@ const int LEFT(75);  //left arrow
 const char QUIT('Q'); //to end the game
 const char CHEAT('C'); // to cheat 
 
+int miceCollected;
+
 string playerName; // global string for holding player names
 
 struct Item
@@ -301,8 +303,8 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
 
         snake.push_back(newBody); // 2 new bodys
         snake.push_back(newBody);
-		++score; // increment values, also making it so the program only increments score when player is not cheating
-
+		++miceCollected; // increment values, also making it so the program only increments score when player is not cheating
+		score += 5;
     }
 	else
 	{
@@ -438,7 +440,8 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score)
 	showMessage(clRed, clYellow, 40, 6, "TO MOVE - USE KEYBOARD ARROWS ");
 	showMessage(clRed, clYellow, 40, 7, "TO QUIT - ENTER 'Q'           ");
 	showMessage(clRed, clYellow, 40, 8, "TO CHEAT - ENTER 'C'           ");
-	showMessage(clRed, clYellow, 40, 14, "Score: " + tostring(score));	
+	showMessage(clRed, clYellow, 40, 14, "SCORE: " + tostring(score));	
+	showMessage(clRed, clYellow, 40, 15, "MICE COLLECTED: " + tostring(miceCollected) + "/10");
 
 	//print auxiliary messages if any
 	showMessage(clBlack, clWhite, 40, 11, mess); //display current message
