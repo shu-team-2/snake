@@ -78,7 +78,7 @@ int main()
 	int getKeyPress();
 	void endProgram();
 
-	void activateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode, int &score);
+	void activateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode);
     void deactivateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode);
 	void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake);
 	void getPlayerData(); // get player name prototype
@@ -127,7 +127,7 @@ int main()
 			deactivateCheat(grid, snake, snakeSize, cheatMode);		// calling deactivate cheat function
 		else if (isCheatKey(keyCode)) // if user presses 'C' keyCode and cheat mode is disabled
 		{
-			activateCheat(grid, snake, snakeSize, cheatMode, score);		// calling the cheat function
+			activateCheat(grid, snake, snakeSize, cheatMode);		// calling the cheat function
 		}
 		else
 			message = "INVALID KEY!"; // set 'Invalid keyCode' message
@@ -306,6 +306,7 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
     }
 	else
 	{
+		score = 0;
 	}
 
 	showMessage(clRed, clYellow, 40, 16, "MOUSE CAUGHT!");
@@ -457,7 +458,7 @@ void getPlayerData()
 	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
 }
 
-void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode, int &score)
+void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
@@ -469,7 +470,6 @@ void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool
 	
     showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
 
-	score == 0;
 }
 
 void deactivateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
