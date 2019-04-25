@@ -518,7 +518,7 @@ void getPlayerData(int &score)
 	ifstream checkLoadSave("saveFile.save", ios::out);; // creating an output file that will store the data to be saved
 	if (checkLoadSave.fail()) // if the program fails to open the file
 	{
-		cout << "No Save File Found!";
+		cout << "No Save File Found!" << endl;
 	}
 	else
 	{
@@ -645,23 +645,18 @@ void loadGame(int &score)
 	int scores[3];
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 	ifstream loadedSave("saveFile.save");
-	if (loadedSave.fail())
-	{
-		showMessage(clDarkBlue, clWhite, 40, 20, "LOAD FAILED");
-	}
-	else
-	{
-		int value;
 
-		for (int i(1); i <= 2; ++i)
-		{
-			loadedSave >> value; // reading in next integer
-			scores[i] = value; // storing first 2 values in the array (score + mice collected)
-		}
+	int value;
 
-		score = scores[1]; // storing loaded score in game score variable
-		miceCollected = scores[2]; // storing mice collected in global variable
+	for (int i(1); i <= 2; ++i)
+	{
+		loadedSave >> value; // reading in next integer
+		scores[i] = value; // storing first 2 values in the array (score + mice collected)
 	}
+
+	score = scores[1]; // storing loaded score in game score variable
+	miceCollected = scores[2]; // storing mice collected in global variable
+
 	loadedSave.close(); // closing the file
 }
 void endProgram()
