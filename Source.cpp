@@ -8,6 +8,7 @@
 #include <time.h> 
 #include <vector> // including the vector library for snake 
 #include <algorithm>
+#include <fstream> // including file streaming library for writing/reading data to .txt file
 
 using namespace std;
 
@@ -43,6 +44,7 @@ const int LEFT(75);  //left arrow
 // defining the other command letters
 const char QUIT('Q'); //to end the game
 const char CHEAT('C'); // to cheat 
+const char SAVE('S'); // to save
 int miceCollected;
 
 string playerName; // global string for holding player names
@@ -77,6 +79,7 @@ int main()
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
 	bool isCheatKey(const int key); // creating cheat keyCode prototype
+	void saveGame(int &score);
 	int getKeyPress();
 	void endProgram();
 
@@ -132,7 +135,10 @@ int main()
 		{
 			activateCheat(grid, snake, snakeSize, cheatMode);		// calling the cheat function
 		}
-		else
+		else if (keyCode == 'S') // if user chooses to save game
+		{
+			saveGame(score);
+		}
 			message = "INVALID KEY!"; // set 'Invalid keyCode' message
 	} while (toupper(keyCode) != QUIT);	  // while user does not want to quit
 
@@ -364,6 +370,26 @@ void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake, bool &invi
 	// TODO implement
 }
 
+void saveGame(int &score)
+{
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	ofstream writeToFile; // creating an output file stream variable that will store the data to be saved
+	writeToFile.open("saveFile.txt", ios::out); // opening the text file for saving
+	if (writeToFile.fail())
+	{
+		showMessage(clDarkBlue, clWhite, 40, 20, "SAVE FAILED");
+	}
+	else
+	{
+		writeToFile << "Player Name: " << playerName.c_str() << endl;
+		writeToFile << "Score: " << score << endl;
+		writeToFile << "Mice Collected: " << miceCollected << endl;
+	}
+
+
+	writeToFile.close();
+}
+
 //---------------------------------------------------------------------------
 //----- process keyCode
 //---------------------------------------------------------------------------
@@ -498,11 +524,11 @@ void getPlayerData()
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 
-	string name; // local variable for holding player name
+	//string name; // local variable for holding player name
 	cout << "Enter your name (Max 20 characters): ";
-	cin >> name;
-	name.resize(20); // resizing the string to first 20 characters
-	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + name);
+	cin >> playerName;
+	playerName.resize(20); // resizing the string to first 20 characters
+	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + playerName);
 }
 
 void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
