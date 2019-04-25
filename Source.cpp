@@ -80,13 +80,14 @@ int main()
 	bool isArrowKey(const int k);
 	bool isCheatKey(const int key); // creating cheat keyCode prototype
 	void saveGame(int &score);
+	void loadGame(int &score);
 	int getKeyPress();
 	void endProgram();
 
 	void activateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode);
 	void deactivateCheat(char g[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode);
 	void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake, bool &invincible);
-	void getPlayerData(); // get player name prototype
+	void getPlayerData(int &score); // get player name prototype
 
 	// local variable declarations
 	char grid[SIZEY][SIZEX];		  // grid for display
@@ -111,7 +112,7 @@ int main()
 	string message("LET'S START..."); // current message to player
 
 	//action...
-	getPlayerData(); // get player name function call
+	getPlayerData(score); // get player name function call
 
 	seed(); // seed the random number generator
 	SetConsoleTitle("FoP 2018-19 - Task 1c - Game Skeleton");
@@ -138,8 +139,9 @@ int main()
 		else if (keyCode == 'S') // if user chooses to save game
 		{
 			saveGame(score);
+			//loadGame(score);
 		}
-			message = "INVALID KEY!"; // set 'Invalid keyCode' message
+		message = "INVALID KEY!"; // set 'Invalid keyCode' message
 	} while (toupper(keyCode) != QUIT);	  // while user does not want to quit
 
 	renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
@@ -216,9 +218,9 @@ void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode,
 {
 	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
 	void updateGrid(
-	char grid[][SIZEX], const char maze[][SIZEX],
-	vector<Item> &snake, Item &mouse, Item &pill,
-	int &score, int &pillCounter);
+		char grid[][SIZEX], const char maze[][SIZEX],
+		vector<Item> &snake, Item &mouse, Item &pill,
+		int &score, int &pillCounter);
 
 	updateGameData(grid, keyCode, mess, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter); // move spot in required direction
 	updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
@@ -246,9 +248,9 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	newY += snake.front().y;
 
 	if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, pillCounter, cheatMode); }
-	else if (grid[newY][newX] == POWERPILL) { 
-		eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score); 
-		
+	else if (grid[newY][newX] == POWERPILL) {
+		eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score);
+
 
 	}
 
@@ -281,7 +283,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 		snake.front() = { newX, newY, HEAD }; // new head
 
 		// other options checks
-		
+
 	}
 }
 
@@ -354,8 +356,8 @@ void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pil
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 	showMessage(clDarkBlue, clWhite, 40, 15, "POWERPILL: CONSUMED");
-	
-	
+
+
 	pill.randomise(grid); // new pill location
 	invincibleCounter = score; // setting the counter to the score, since invicible mode must be deactivated after 20 steps
 	invincible = true; // turning on invincible mode when snake eats pill
@@ -370,25 +372,9 @@ void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake, bool &invi
 	// TODO implement
 }
 
-void saveGame(int &score)
-{
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-	ofstream writeToFile; // creating an output file stream variable that will store the data to be saved
-	writeToFile.open("saveFile.txt", ios::out); // opening the text file for saving
-	if (writeToFile.fail())
-	{
-		showMessage(clDarkBlue, clWhite, 40, 20, "SAVE FAILED");
-	}
-	else
-	{
-		writeToFile << "Player Name: " << playerName.c_str() << endl;
-		writeToFile << "Score: " << score << endl;
-		writeToFile << "Mice Collected: " << miceCollected << endl;
-	}
 
 
-	writeToFile.close();
-}
+
 
 //---------------------------------------------------------------------------
 //----- process keyCode
@@ -485,6 +471,9 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	//display game title
 
 	showMessage(clBlack, clYellow, 0, 0, "___GAME___");
+	showMessage(clBlack, clYellow, 0, 1, " ");
+	showMessage(clBlack, clYellow, 0, 2, " ");
+
 
 	showMessage(clWhite, clRed, 40, 0, "FoP Task 1c - February 2019   ");
 	showMessage(clWhite, clRed, 40, 1, getTime()); //outputting current time
@@ -512,6 +501,7 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	{
 		showMessage(clDarkBlue, clWhite, 40, 18, "INVINCIBLE MODE: DEACTIVATED");
 	}
+	showMessage(clDarkBlue, clWhite, 40, 19, "PRESS 'S' TO SAVE!");
 
 	//print auxiliary messages if any
 	showMessage(clBlack, clWhite, 40, 11, mess); //display current message
@@ -520,14 +510,37 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	paintGrid(g, snake, invincible);
 }
 
-void getPlayerData()
+void getPlayerData(int &score)
 {
+	void loadGame(int &score);
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-
+	char key;
+	ifstream checkLoadSave("saveFile.save", ios::out);; // creating an output file that will store the data to be saved
+	if (checkLoadSave.fail()) // if the program fails to open the file
+	{
+		cout << "No Save File Found!";
+	}
+	else
+	{
+		cout << "SAVE FILE DETECTED" << endl;
+		cout << "Do You Wish To Load Game? Y/N: ";
+		cin >> key;
+		switch (key)
+		{
+		case 'Y':
+			loadGame(score);
+			break;
+		default:
+			break;
+		}
+	}
 	//string name; // local variable for holding player name
 	cout << "Enter your name (Max 20 characters): ";
 	cin >> playerName;
-	playerName.resize(20); // resizing the string to first 20 characters
+	if (playerName.length() >= 20)
+	{
+		playerName.resize(20); // resizing the string to first 20 characters
+	}
 	showMessage(clDarkGreen, clWhite, 40, 9, "PLAYER: " + playerName);
 }
 
@@ -562,7 +575,7 @@ void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible)
 	selectBackColour(clBlack);
 	selectTextColour(clWhite);
 	gotoxy(0, 2);
-		
+
 
 	// painting the grid, using different colours for different chars
 	for (int row(0); row < SIZEY; ++row)
@@ -589,7 +602,7 @@ void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible)
 			else if (g[row][col] == '#')
 			{
 				selectTextColour(clBlue);
-			}			
+			}
 			else if (g[row][col] == '+')
 			{
 				selectTextColour(clDarkYellow);
@@ -604,6 +617,53 @@ void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible)
 	}
 }
 
+
+void saveGame(int &score) // save to file function
+{
+	string name = playerName;
+	name += ".save"; // saving the file in .save format
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	ofstream writeToFile("saveFile.save", ios::out);; // creating an output file that will store the data to be saved
+	if (writeToFile.fail()) // if the program fails to open the file
+	{
+		showMessage(clDarkBlue, clWhite, 40, 20, "SAVE FAILED");
+	}
+	else
+	{
+		showMessage(clDarkBlue, clWhite, 40, 20, "GAME SAVED");
+		writeToFile << score << endl; // writing score to file
+		writeToFile << miceCollected << endl;
+		writeToFile << playerName << ":Player Name " << endl; // writing player name to file
+	//	writeToFile << miceCollected << ":Mice Collected: " << endl; // writing the mice collected to file
+	}
+	writeToFile.close(); // closing the text file once data has been written
+}
+
+void loadGame(int &score)
+{
+	string temp;
+	int scores[3];
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	ifstream loadedSave("saveFile.save");
+	if (loadedSave.fail())
+	{
+		showMessage(clDarkBlue, clWhite, 40, 20, "LOAD FAILED");
+	}
+	else
+	{
+		int value;
+
+		for (int i(1); i <= 2; ++i)
+		{
+			loadedSave >> value; // reading in next integer
+			scores[i] = value; // storing first 2 values in the array (score + mice collected)
+		}
+
+		score = scores[1]; // storing loaded score in game score variable
+		miceCollected = scores[2]; // storing mice collected in global variable
+	}
+	loadedSave.close(); // closing the file
+}
 void endProgram()
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
