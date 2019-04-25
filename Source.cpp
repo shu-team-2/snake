@@ -454,7 +454,7 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	string tostring(int x);
 
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
-	void paintGrid(const char g[][SIZEX], vector<Item> &snake);
+	void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible);
 
 	//display game title
 
@@ -491,7 +491,7 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	showMessage(clBlack, clWhite, 40, 11, mess); //display current message
 
 	//display grid contents
-	paintGrid(g, snake);
+	paintGrid(g, snake, invincible);
 }
 
 void getPlayerData()
@@ -530,7 +530,7 @@ void deactivateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bo
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
 }
 
-void paintGrid(const char g[][SIZEX], vector<Item> &snake)
+void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible)
 {
 	// display grid content on screen
 	selectBackColour(clBlack);
@@ -544,18 +544,26 @@ void paintGrid(const char g[][SIZEX], vector<Item> &snake)
 		for (int col(0); col < SIZEX; ++col)
 		{
 			selectTextColour(clWhite);
-			if (g[row][col] == '0')
+			if (g[row][col] == '0' && invincible == true)
+			{
+				selectTextColour(clYellow);
+			}
+			else if (g[row][col] == '0')
 			{
 				selectTextColour(clRed);
 			}
-			else if (g[row][col] == '#')
+			else if (g[row][col] == 'o' && invincible == true)
 			{
-				selectTextColour(clBlue);
+				selectTextColour(clRed);
 			}
 			else if (g[row][col] == 'o')
 			{
 				selectTextColour(clGreen);
 			}
+			else if (g[row][col] == '#')
+			{
+				selectTextColour(clBlue);
+			}			
 			else if (g[row][col] == '+')
 			{
 				selectTextColour(clDarkYellow);
