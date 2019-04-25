@@ -70,10 +70,9 @@ struct Item
 
 int main()
 {
-	
 	//function declarations (prototypes)
 	void initialiseGame(char g[][SIZEX], char m[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
-	void renderGame(const char g[][SIZEX], const string &mess, const int &score, bool &invincible);
+	void renderGame(const char g[][SIZEX], const string &mess, const int &score, bool &invincible, vector<Item> &snake);
 	void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
@@ -119,7 +118,7 @@ int main()
 
 	do // game loop
 	{
-		renderGame(grid, message, score, invincible); // display game info, modified grid and messages
+		renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
 
 		keyCode = getKeyPress(); // read in  selected keyCode: arrow or letter command
 		if (isArrowKey(keyCode))
@@ -137,7 +136,7 @@ int main()
 			message = "INVALID KEY!"; // set 'Invalid keyCode' message
 	} while (toupper(keyCode) != QUIT);	  // while user does not want to quit
 
-	renderGame(grid, message, score, invincible); // display game info, modified grid and messages
+	renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
 	endProgram();			   // display final message
 	return 0;
 }
@@ -241,7 +240,11 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	newY += snake.front().y;
 
 	if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, pillCounter, cheatMode); }
-	else if (grid[newY][newX] == POWERPILL) { eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score); }
+	else if (grid[newY][newX] == POWERPILL) { 
+		eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score); 
+		
+
+	}
 
 	if (invincibleCounter + 20 == score)
 	{
@@ -345,6 +348,8 @@ void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pil
 {
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
 	showMessage(clDarkBlue, clWhite, 40, 15, "POWERPILL: CONSUMED");
+	
+	
 	pill.randomise(grid); // new pill location
 	invincibleCounter = score; // setting the counter to the score, since invicible mode must be deactivated after 20 steps
 	invincible = true; // turning on invincible mode when snake eats pill
@@ -442,14 +447,14 @@ void showMessage(const WORD backColour, const WORD textColour, int x, int y, con
 	selectTextColour(textColour);
 	cout << message + string(40 - message.length(), ' ');
 }
-void renderGame(const char g[][SIZEX], const string &mess, const int &score, bool &invincible)
+void renderGame(const char g[][SIZEX], const string &mess, const int &score, bool &invincible, vector<Item> &snake)
 {
 	// display game title, messages, maze, spot and other items on screen
 	string tostring(char x);
 	string tostring(int x);
 
 	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
-	void paintGrid(const char g[][SIZEX]);
+	void paintGrid(const char g[][SIZEX], vector<Item> &snake);
 
 	//display game title
 
@@ -486,7 +491,7 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	showMessage(clBlack, clWhite, 40, 11, mess); //display current message
 
 	//display grid contents
-	paintGrid(g);
+	paintGrid(g, snake);
 }
 
 void getPlayerData()
@@ -525,17 +530,42 @@ void deactivateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bo
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
 }
 
-void paintGrid(const char g[][SIZEX])
+void paintGrid(const char g[][SIZEX], vector<Item> &snake)
 {
 	// display grid content on screen
 	selectBackColour(clBlack);
 	selectTextColour(clWhite);
 	gotoxy(0, 2);
-	//TODO: Give a diferent colour to the symbol representing Spot
+		
+
+	// painting the grid, using different colours for different chars
 	for (int row(0); row < SIZEY; ++row)
 	{
 		for (int col(0); col < SIZEX; ++col)
+		{
+			selectTextColour(clWhite);
+			if (g[row][col] == '0')
+			{
+				selectTextColour(clRed);
+			}
+			else if (g[row][col] == '#')
+			{
+				selectTextColour(clBlue);
+			}
+			else if (g[row][col] == 'o')
+			{
+				selectTextColour(clGreen);
+			}
+			else if (g[row][col] == '+')
+			{
+				selectTextColour(clDarkYellow);
+			}
+			else if (g[row][col] == '@')
+			{
+				selectTextColour(clMagenta);
+			}
 			cout << g[row][col]; //output cell content
+		}
 		cout << endl;
 	}
 }
