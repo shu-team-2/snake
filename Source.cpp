@@ -216,16 +216,13 @@ void setInitialMazeStructure(char maze[][SIZEX])
 
 void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
 {
-	void updateGameData(const char g[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
-	void updateGrid(
-		char grid[][SIZEX], const char maze[][SIZEX],
-		vector<Item> &snake, Item &mouse, Item &pill,
-		int &score, int &pillCounter);
+	void updateGameData(char g[][SIZEX], const char maze[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
+	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
 
-	updateGameData(grid, keyCode, mess, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter); // move spot in required direction
+	updateGameData(grid, maze, keyCode, mess, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter); // move spot in required direction
 	updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
 }
-void updateGameData(const char grid[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
+void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
 {
 	// move spot in required direction
 	bool wantsToQuit(int key); // prototype of wants to quit function
@@ -233,6 +230,8 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	void setKeyDirection(int k, int &dx, int &dy, int &score);
 	void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode);
 	void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode, bool &invincible, int &invincibleCounter, int &score);
+	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
+
 
 	assert(isArrowKey(key));
 	void endProgram();
@@ -248,11 +247,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	newY += snake.front().y;
 
 	if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, pillCounter, cheatMode); }
-	else if (grid[newY][newX] == POWERPILL) {
-		eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score);
-
-
-	}
+	else if (grid[newY][newX] == POWERPILL) { eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score); }
 
 	if (invincibleCounter + 20 == score)
 	{
@@ -261,7 +256,7 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 
 	if (invincible == true && grid[newY][newX] == WALL)
 	{
-		snake.front().x = SIZEX - 14; // moving snake to opposite side of grid if wall is hit
+		snake.front().x = SIZEX - newX; // moving snake to opposite side of grid if wall is hit
 	}
 	else if (invincible == true && grid[newY][newX] == WALL || grid[newY][newX] == BODY)
 	{
@@ -275,12 +270,19 @@ void updateGameData(const char grid[][SIZEX], const int key, string &mess, vecto
 	}
 	else
 	{
-		for (int i(snake.size() - 1); i > 0; --i) // shift snake 
-		{
-			snake.at(i).x = snake.at(i - 1).x; // shift item positions
-			snake.at(i).y = snake.at(i - 1).y;
-		}
-		snake.front() = { newX, newY, HEAD }; // new head
+		//if (key == LEFT)
+		//{
+
+			for (int i(snake.size() - 1); i > 0; --i) // shift snake 
+			{
+				snake.at(i).x = snake.at(i - 1).x; // shift item positions
+				snake.at(i).y = snake.at(i - 1).y;
+			}
+			snake.front() = { newX, newY, HEAD }; // new head
+			//updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
+			//newX -= 1;
+			//newX += snake.front().x;
+		//}
 
 		// other options checks
 
@@ -371,10 +373,6 @@ void checkPowerPill(char g[][SIZEX], Item &pill, vector<Item> &snake, bool &invi
 {
 	// TODO implement
 }
-
-
-
-
 
 //---------------------------------------------------------------------------
 //----- process keyCode
