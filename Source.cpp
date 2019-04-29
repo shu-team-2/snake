@@ -5,8 +5,8 @@
 #include <cassert>
 #include <string>
 #include <sstream>
-#include <time.h> 
-#include <vector> // including the vector library for snake 
+#include <time.h>
+#include <vector> // including the vector library for snake
 #include <algorithm>
 #include <fstream> // including file streaming library for writing/reading data to .txt file
 
@@ -26,12 +26,12 @@ const int SIZEX(25); //horizontal dimension (length of border)
 const int SIZEY(11); //vertical dimension (height of border)
 
 // defining symbols used for display of the grid and content
-const char HEAD('0');   //spot
-const char TUNNEL(' '); //tunnel
-const char WALL('#');   //wall
+const char HEAD('0');		   //spot
+const char TUNNEL(' ');		   //tunnel
+const char WALL('#');		   //wall
 const char BORDER = char(254); // border
-const char BODY('o');  // body of snake
-const char MOUSE('@'); // mouse
+const char BODY('o');		   // body of snake
+const char MOUSE('@');		   // mouse
 
 const char POWERPILL('+'); // powerpill
 
@@ -42,9 +42,9 @@ const int RIGHT(77); //right arrow
 const int LEFT(75);  //left arrow
 
 // defining the other command letters
-const char QUIT('Q'); //to end the game
-const char CHEAT('C'); // to cheat 
-const char SAVE('S'); // to save
+const char QUIT('Q');  //to end the game
+const char CHEAT('C'); // to cheat
+const char SAVE('S');  // to save
 int miceCollected;
 
 string playerName; // global string for holding player names
@@ -75,7 +75,7 @@ int main()
 	//function declarations (prototypes)
 	void initialiseGame(char g[][SIZEX], char m[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
 	void renderGame(const char g[][SIZEX], const string &mess, const int &score, bool &invincible, vector<Item> &snake);
-	void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
+	void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
 	bool isCheatKey(const int key); // creating cheat keyCode prototype
@@ -90,8 +90,8 @@ int main()
 	void getPlayerData(int &score); // get player name prototype
 
 	// local variable declarations
-	char grid[SIZEY][SIZEX];		  // grid for display
-	char maze[SIZEY][SIZEX];		  // structure of the maze
+	char grid[SIZEY][SIZEX]; // grid for display
+	char maze[SIZEY][SIZEX]; // structure of the maze
 
 	// game items
 	vector<Item> snake = {
@@ -100,15 +100,16 @@ int main()
 		{0, 0, BODY},
 		{0, 0, BODY},
 	};
-	Item pill = { 0, 0, POWERPILL };
-	Item mouse = { 0, 0, MOUSE };
+	Item pill = {0, 0, POWERPILL};
+	Item mouse = {0, 0, MOUSE};
 
 	bool cheatMode(false); // detecting cheatmode
-	bool invincible(false);; // detecting invincible mode
-	int snakeSize(0);      // storing the snake length, so correct amount of body parts can be added to snake when cheat is deactivated
-	int score(0);          // storing score
-	int pillCounter(0);      // storing the counter of mice collected (resets at 2)
-	int invincibleCounter(0); // storing the counter of the steps taken while invincible
+	bool invincible(false);
+	;								  // detecting invincible mode
+	int snakeSize(0);				  // storing the snake length, so correct amount of body parts can be added to snake when cheat is deactivated
+	int score(0);					  // storing score
+	int pillCounter(0);				  // storing the counter of mice collected (resets at 2)
+	int invincibleCounter(0);		  // storing the counter of the steps taken while invincible
 	string message("LET'S START..."); // current message to player
 
 	//action...
@@ -130,22 +131,22 @@ int main()
 			updateGame(grid, maze, keyCode, message, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter);
 			checkPowerPill(grid, pill, snake, invincible); // checking to see if there is 2 mice collected
 		}
-		else if (isCheatKey(keyCode) && cheatMode) // if the user presses 'C' to deactivate cheat mode
-			deactivateCheat(grid, snake, snakeSize, cheatMode);		// calling deactivate cheat function
-		else if (isCheatKey(keyCode)) // if user presses 'C' keyCode and cheat mode is disabled
+		else if (isCheatKey(keyCode) && cheatMode)				// if the user presses 'C' to deactivate cheat mode
+			deactivateCheat(grid, snake, snakeSize, cheatMode); // calling deactivate cheat function
+		else if (isCheatKey(keyCode))							// if user presses 'C' keyCode and cheat mode is disabled
 		{
-			activateCheat(grid, snake, snakeSize, cheatMode);		// calling the cheat function
+			activateCheat(grid, snake, snakeSize, cheatMode); // calling the cheat function
 		}
 		else if (keyCode == 'S') // if user chooses to save game
 		{
 			saveGame(score);
 			//loadGame(score);
 		}
-		message = "INVALID KEY!"; // set 'Invalid keyCode' message
-	} while (toupper(keyCode) != QUIT);	  // while user does not want to quit
+		message = "INVALID KEY!";		// set 'Invalid keyCode' message
+	} while (toupper(keyCode) != QUIT); // while user does not want to quit
 
 	renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
-	endProgram();			   // display final message
+	endProgram();										 // display final message
 	return 0;
 }
 
@@ -181,18 +182,18 @@ void setInitialMazeStructure(char maze[][SIZEX])
 	// set the position of the walls in the maze
 	// TODO: Amend initial maze configuration (change size changed and inner walls)
 	// initialise maze configuration
-	char initialMaze[SIZEY][SIZEX] 	//local array to store the maze structure
-		= { { '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#','#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#' },
-		{ '#', ' ', ' ',' ', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
-		{ '#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ',' ', '#', '#', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#' },
-		{ '#', ' ', ' ', ' ', ' ','#', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#' },
-		{ '#',' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#' },
-		{ '#', ' ', ' ', ' ', ' ', ' ',' ', ' ', ' ', ' ', '#', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#' },
-		{ '#', ' ', ' ', ' ', ' ','#', ' ', ' ', '#', ' ', ' ', '#', ' ',  ' ', ' ',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
-		{ '#', ' ', '#', ' ', ' ', ' ', ' ','#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#' },
-		{ '#', ' ', ' ', ' ', ' ','#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
-		{ '#', ' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#' },
-		{ '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#','#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#' } };
+	char initialMaze[SIZEY][SIZEX] //local array to store the maze structure
+		= {{'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
+		   {'#', ' ', ' ', ' ', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+		   {'#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#'},
+		   {'#', ' ', ' ', ' ', ' ', '#', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', '#', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'},
+		   {'#', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#'},
+		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', '#', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
+		   {'#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+		   {'#', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#'},
+		   {'#', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+		   {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+		   {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}};
 
 	// with '#' for wall, ' ' for tunnel, etc.
 	// copy into maze structure with appropriate symbols
@@ -214,13 +215,13 @@ void setInitialMazeStructure(char maze[][SIZEX])
 //----- Update Game
 //---------------------------------------------------------------------------
 
-void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string& mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
+void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
 {
-	void updateGameData(char g[][SIZEX], const char maze[][SIZEX], const int kc, string& m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
+	void updateGameData(char g[][SIZEX], const char maze[][SIZEX], const int kc, string &m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
 	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
 
 	updateGameData(grid, maze, keyCode, mess, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter); // move spot in required direction
-	updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
+	updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);																			// update grid information
 }
 void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
 {
@@ -231,7 +232,6 @@ void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key,
 	void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode);
 	void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode, bool &invincible, int &invincibleCounter, int &score);
 	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
-
 
 	assert(isArrowKey(key));
 	void endProgram();
@@ -246,8 +246,14 @@ void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key,
 	newX += snake.front().x;
 	newY += snake.front().y;
 
-	if (grid[newY][newX] == MOUSE) { eatMouse(grid, snake, mouse, score, pillCounter, cheatMode); }
-	else if (grid[newY][newX] == POWERPILL) { eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score); }
+	if (grid[newY][newX] == MOUSE)
+	{
+		eatMouse(grid, snake, mouse, score, pillCounter, cheatMode);
+	}
+	else if (grid[newY][newX] == POWERPILL)
+	{
+		eatPill(grid, snake, pill, pillCounter, cheatMode, invincible, invincibleCounter, score);
+	}
 
 	if (invincibleCounter + 20 == score)
 	{
@@ -260,7 +266,6 @@ void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key,
 	}
 	else if (invincible == true && grid[newY][newX] == WALL || grid[newY][newX] == BODY)
 	{
-
 	}
 	else if (grid[newY][newX] == BORDER || grid[newY][newX] == WALL || grid[newY][newX] == BODY)
 	{
@@ -273,19 +278,18 @@ void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key,
 		//if (key == LEFT)
 		//{
 
-			for (int i(snake.size() - 1); i > 0; --i) // shift snake 
-			{
-				snake.at(i).x = snake.at(i - 1).x; // shift item positions
-				snake.at(i).y = snake.at(i - 1).y;
-			}
-			snake.front() = { newX, newY, HEAD }; // new head
-			//updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
-			//newX -= 1;
-			//newX += snake.front().x;
-		//}
+		for (int i(snake.size() - 1); i > 0; --i) // shift snake
+		{
+			snake.at(i).x = snake.at(i - 1).x; // shift item positions
+			snake.at(i).y = snake.at(i - 1).y;
+		}
+		snake.front() = {newX, newY, HEAD}; // new head
+											//updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);	 // update grid information
+											//newX -= 1;
+											//newX += snake.front().x;
+											//}
 
 		// other options checks
-
 	}
 }
 
@@ -293,14 +297,17 @@ void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snak
 {
 	// update grid configuration after each move
 	void placeMaze(char g[][SIZEX], const char b[][SIZEX]);
-	void placeSnake(char grid[][SIZEX], vector <Item> &snake);
+	void placeSnake(char grid[][SIZEX], vector<Item> &snake);
 
 	placeMaze(grid, maze); //reset the empty maze configuration into grid
 	placeSnake(grid, snake);
 	mouse.place(grid); // place mouse
 
 	// +1 offset prevents spawn when score==0
-	if (pillCounter == 2) { pill.place(grid); }
+	if (pillCounter == 2)
+	{
+		pill.place(grid);
+	}
 }
 
 void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
@@ -311,16 +318,19 @@ void placeMaze(char grid[][SIZEX], const char maze[][SIZEX])
 			grid[row][col] = maze[row][col];
 }
 
-void placeSnake(char grid[][SIZEX], vector <Item> &snake)
+void placeSnake(char grid[][SIZEX], vector<Item> &snake)
 {
 	// place snake backwards so head is visible on spawn
-	for (int i(snake.size() - 1); i >= 0; --i) { snake.at(i).place(grid); }
+	for (int i(snake.size() - 1); i >= 0; --i)
+	{
+		snake.at(i).place(grid);
+	}
 }
 
 // function for eating the mouse
 void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &score, int &pillCounter, const bool &cheatMode)
 {
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 	void endProgram();
 	mouse.randomise(maze); // new mouse
 
@@ -336,14 +346,14 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
 	if (!cheatMode) // dont change snake when cheating
 	{
 		// use body explicitly in case of powerpill
-		Item newBody = { snake.back().x, snake.back().y, BODY };
+		Item newBody = {snake.back().x, snake.back().y, BODY};
 
 		snake.push_back(newBody); // 2 new bodys
 		snake.push_back(newBody);
-		++miceCollected; // increment values, also making it so the program only increments score when player is not cheating	
+		++miceCollected; // increment values, also making it so the program only increments score when player is not cheating
 		if (miceCollected >= 10)
 		{
-			endProgram();  // ending the game when 10 mice are eaten
+			endProgram(); // ending the game when 10 mice are eaten
 		}
 	}
 	else
@@ -356,15 +366,17 @@ void eatMouse(const char maze[][SIZEX], vector<Item> &snake, Item &mouse, int &s
 // function for eating the pill
 void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode, bool &invincible, int &invincibleCounter, int &score)
 {
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 	showMessage(clDarkBlue, clWhite, 40, 15, "POWERPILL: CONSUMED");
 
-
-	pill.randomise(grid); // new pill location
+	pill.randomise(grid);	  // new pill location
 	invincibleCounter = score; // setting the counter to the score, since invicible mode must be deactivated after 20 steps
-	invincible = true; // turning on invincible mode when snake eats pill
+	invincible = true;		   // turning on invincible mode when snake eats pill
 	// dont change snake when cheating
-	if (!cheatMode) { snake.resize(4); } // just head
+	if (!cheatMode)
+	{
+		snake.resize(4);
+	} // just head
 
 	pillCounter = 0; // reset pill counter
 }
@@ -395,12 +407,12 @@ void setKeyDirection(const int key, int &dx, int &dy, int &score)
 		dy = 0;
 		score++;
 		break;
-	case UP:	 // when UP arrow pressed...
+	case UP: // when UP arrow pressed...
 		dx = 0;
 		dy = -1; // decrease the Y coordinate
 		score++;
 		break;
-	case DOWN:	 // when DOWN arrow pressed...
+	case DOWN: // when DOWN arrow pressed...
 		dx = 0;
 		dy = +1; // increase the Y coordinate
 		score++;
@@ -472,12 +484,10 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 	showMessage(clBlack, clYellow, 0, 1, " ");
 	showMessage(clBlack, clYellow, 0, 2, " ");
 
-
 	showMessage(clWhite, clRed, 40, 0, "FoP Task 1c - February 2019   ");
 	showMessage(clWhite, clRed, 40, 1, getTime()); //outputting current time
 
 	showMessage(clWhite, clRed, 40, 2, getDate()); // outputting current date
-
 
 	// displaying group and group members
 	showMessage(clDarkBlue, clWhite, 40, 3, "SE3_8");
@@ -511,9 +521,10 @@ void renderGame(const char g[][SIZEX], const string &mess, const int &score, boo
 void getPlayerData(int &score)
 {
 	void loadGame(int &score);
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 	char key;
-	ifstream checkLoadSave("saveFile.save", ios::out);; // creating an output file that will store the data to be saved
+	ifstream checkLoadSave("saveFile.save", ios::out);
+	;						  // creating an output file that will store the data to be saved
 	if (checkLoadSave.fail()) // if the program fails to open the file
 	{
 		cout << "No Save File Found!" << endl;
@@ -544,25 +555,27 @@ void getPlayerData(int &score)
 
 void activateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 
 	cheatMode = true; // setting global cheat bool to true
 
-	snakeSize = static_cast<int>(snake.size());	 // getting the size of the snake
+	snakeSize = static_cast<int>(snake.size()); // getting the size of the snake
 
 	snake.resize(4); // original size
 
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: ENABLED.");
-
 }
 
 void deactivateCheat(char grid[][SIZEX], vector<Item> &snake, int &snakeSize, bool &cheatMode)
 {
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 
 	cheatMode = false;
 
-	for (int i(0); i < snakeSize - 1; ++i) { snake.push_back(snake.back()); } // replace body
+	for (int i(0); i < snakeSize - 1; ++i)
+	{
+		snake.push_back(snake.back());
+	} // replace body
 
 	showMessage(clDarkBlue, clWhite, 40, 10, "CHEAT MODE: DISABLED.");
 }
@@ -573,7 +586,6 @@ void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible)
 	selectBackColour(clBlack);
 	selectTextColour(clWhite);
 	gotoxy(0, 2);
-
 
 	// painting the grid, using different colours for different chars
 	for (int row(0); row < SIZEY; ++row)
@@ -615,13 +627,13 @@ void paintGrid(const char g[][SIZEX], vector<Item> &snake, bool &invincible)
 	}
 }
 
-
 void saveGame(int &score) // save to file function
 {
 	string name = playerName;
 	name += ".save"; // saving the file in .save format
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
-	ofstream writeToFile("saveFile.save", ios::out);; // creating an output file that will store the data to be saved
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
+	ofstream writeToFile("saveFile.save", ios::out);
+	;						// creating an output file that will store the data to be saved
 	if (writeToFile.fail()) // if the program fails to open the file
 	{
 		showMessage(clDarkBlue, clWhite, 40, 20, "SAVE FAILED");
@@ -632,7 +644,7 @@ void saveGame(int &score) // save to file function
 		writeToFile << score << endl; // writing score to file
 		writeToFile << miceCollected << endl;
 		writeToFile << playerName << ":Player Name " << endl; // writing player name to file
-	//	writeToFile << miceCollected << ":Mice Collected: " << endl; // writing the mice collected to file
+															  //	writeToFile << miceCollected << ":Mice Collected: " << endl; // writing the mice collected to file
 	}
 	writeToFile.close(); // closing the text file once data has been written
 }
@@ -641,7 +653,7 @@ void loadGame(int &score)
 {
 	string temp;
 	int scores[3];
-	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string& message);
+	void showMessage(const WORD backColour, const WORD textColour, int x, int y, const string &message);
 	ifstream loadedSave("saveFile.save");
 
 	int value;
@@ -649,10 +661,10 @@ void loadGame(int &score)
 	for (int i(1); i <= 2; ++i)
 	{
 		loadedSave >> value; // reading in next integer
-		scores[i] = value; // storing first 2 values in the array (score + mice collected)
+		scores[i] = value;   // storing first 2 values in the array (score + mice collected)
 	}
 
-	score = scores[1]; // storing loaded score in game score variable
+	score = scores[1];		   // storing loaded score in game score variable
 	miceCollected = scores[2]; // storing mice collected in global variable
 
 	loadedSave.close(); // closing the file
@@ -671,5 +683,5 @@ void endProgram()
 		showMessage(clRed, clYellow, 40, 17, "YOU LOSE!");
 	}
 	system("pause"); //hold output screen until a keyboard keyCode is hit
-	exit(0); // quitting the program 
+	exit(0);		 // quitting the program
 }
