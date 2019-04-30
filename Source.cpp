@@ -123,7 +123,7 @@ int main()
 	int snakeDirection(keyCode); // current direction snake is going
 
 	chrono::milliseconds tickInterval(700);								 // how often a tick will happen
-	chrono::milliseconds MIN_TICK_INTERVAL(400);						 // smallest time gap between ticks
+	const chrono::milliseconds MIN_TICK_INTERVAL(400);					 // smallest time gap between ticks
 	auto lastTickTime(chrono::steady_clock::now() - chrono::seconds(1)); // init with second to spare
 
 	do // game loop
@@ -170,10 +170,13 @@ int main()
 			}
 
 			lastTickTime = NOW; // log last tick time
+
 			if (tickInterval > MIN_TICK_INTERVAL)
 			{
-				tickInterval -= chrono::milliseconds(50); // speed up snake
+				tickInterval -= chrono::milliseconds(25); // speed up snake
 			}
+
+			keyCode = snakeDirection; // clear prev keypress
 		}
 	} while (keyCode != KEY_QUIT); // while user does not want to quit
 
