@@ -2,13 +2,13 @@
 #include <iostream>
 #include <iomanip>
 #include <conio.h>
-#include <cassert>
 #include <string>
 #include <sstream>
 #include <time.h>
 #include <vector> // including the vector library for snake
 #include <algorithm>
 #include <fstream> // including file streaming library for writing/reading data to .txt file
+#include <chrono>
 
 using namespace std;
 
@@ -36,15 +36,15 @@ const char MOUSE('@');		   // mouse
 const char POWERPILL('+'); // powerpill
 
 // defining the command letters to move the spot on the maze
-const int UP(72);	//up arrow
-const int DOWN(80);  //down arrow
-const int RIGHT(77); //right arrow
-const int LEFT(75);  //left arrow
+const int KEY_UP(72);	//up arrow
+const int KEY_DOWN(80);  //down arrow
+const int KEY_RIGHT(77); //right arrow
+const int KEY_LEFT(75);  //left arrow
 
 // defining the other command letters
-const char QUIT('Q');  //to end the game
-const char CHEAT('C'); // to cheat
-const char SAVE('S');  // to save
+const char KEY_QUIT('Q');  //to end the game
+const char KEY_CHEAT('C'); // to cheat
+const char KEY_SAVE('S');  // to save
 int miceCollected;
 
 string playerName; // global string for holding player names
@@ -78,7 +78,6 @@ int main()
 	void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
 	bool wantsToQuit(const int key);
 	bool isArrowKey(const int k);
-	bool isCheatKey(const int key); // creating cheat keyCode prototype
 	void saveGame(int &score);
 	void loadGame(int &score);
 	int getKeyPress();
@@ -100,16 +99,17 @@ int main()
 		{0, 0, BODY},
 		{0, 0, BODY},
 	};
+
 	Item pill = {0, 0, POWERPILL};
 	Item mouse = {0, 0, MOUSE};
 
-	bool cheatMode(false); // detecting cheatmode
-	bool invincible(false);
-	;								  // detecting invincible mode
-	int snakeSize(0);				  // storing the snake length, so correct amount of body parts can be added to snake when cheat is deactivated
-	int score(0);					  // storing score
-	int pillCounter(0);				  // storing the counter of mice collected (resets at 2)
-	int invincibleCounter(0);		  // storing the counter of the steps taken while invincible
+	bool cheatMode(false);	// detecting cheatmode
+	bool invincible(false);   // detecting invincible mode
+	int snakeSize(0);		  // storing the snake length, so correct amount of body parts can be added to snake when cheat is deactivated
+	int score(0);			  // storing score
+	int pillCounter(0);		  // storing the counter of mice collected (resets at 2)
+	int invincibleCounter(0); // storing the counter of the steps taken while invincible
+
 	string message("LET'S START..."); // current message to player
 
 	//action...
@@ -119,31 +119,51 @@ int main()
 	SetConsoleTitle("FoP 2018-19 - Task 1c - Game Skeleton");
 	initialiseGame(grid, maze, snake, mouse, pill, score, pillCounter); // initialise grid (incl. walls and spot)
 
-	int keyCode; // current keyCode selected by player
+	int keyCode(KEY_UP); // current keyCode selected by player
+
+	const chrono::milliseconds TICK_FREQ(800);							 // how often a tick will happen
+	auto lastTickTime(chrono::steady_clock::now() - chrono::seconds(1)); // init with second to spare
 
 	do // game loop
 	{
 		renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
 
-		keyCode = getKeyPress(); // read in  selected keyCode: arrow or letter command
-		if (isArrowKey(keyCode))
+		if (_kbhit()) // check key press 
+		{		
+            int kp(toupper(getKeyPress()));
+
+            if (isArrowKey(kp) || kp == KEY_SAVE || kp == KEY_CHEAT || kp == KEY_QUIT) {
+                keyCode = kp; // assign keypress
+            }
+		}
+
+		auto NOW(chrono::steady_clock::now()); // get time now
+
+		if (NOW - lastTickTime >= TICK_FREQ) // check elapsed time
 		{
 			updateGame(grid, maze, keyCode, message, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter);
 			checkPowerPill(grid, pill, snake, invincible); // checking to see if there is 2 mice collected
+
+			if (keyCode == KEY_CHEAT && cheatMode) // if the user presses 'C' to deactivate cheat mode
+			{
+				deactivateCheat(grid, snake, snakeSize, cheatMode); // calling deactivate cheat function
+			}
+			else if (keyCode == KEY_CHEAT) // if user presses 'C' keyCode and cheat mode is disabled
+			{
+				activateCheat(grid, snake, snakeSize, cheatMode); // calling the cheat function
+			}
+			else if (keyCode == KEY_SAVE) // if user chooses to save game
+			{
+				saveGame(score);
+			}
+			else
+			{
+				message = "INVALID KEY!"; // set 'Invalid keyCode' message
+			}
+
+			lastTickTime = NOW; // log last tick time
 		}
-		else if (isCheatKey(keyCode) && cheatMode)				// if the user presses 'C' to deactivate cheat mode
-			deactivateCheat(grid, snake, snakeSize, cheatMode); // calling deactivate cheat function
-		else if (isCheatKey(keyCode))							// if user presses 'C' keyCode and cheat mode is disabled
-		{
-			activateCheat(grid, snake, snakeSize, cheatMode); // calling the cheat function
-		}
-		else if (keyCode == 'S') // if user chooses to save game
-		{
-			saveGame(score);
-			//loadGame(score);
-		}
-		message = "INVALID KEY!";		// set 'Invalid keyCode' message
-	} while (toupper(keyCode) != QUIT); // while user does not want to quit
+	} while (toupper(keyCode) != KEY_QUIT); // while user does not want to quit
 
 	renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
 	endProgram();										 // display final message
@@ -217,13 +237,13 @@ void setInitialMazeStructure(char maze[][SIZEX])
 
 void updateGame(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
 {
-	void updateGameData(char g[][SIZEX], const char maze[][SIZEX], const int kc, string &m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
+	void updateGameData(char g[][SIZEX], const char maze[][SIZEX], const int keyCode, string &m, vector<Item> &sn, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter);
 	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
 
 	updateGameData(grid, maze, keyCode, mess, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter); // move spot in required direction
 	updateGrid(grid, maze, snake, mouse, pill, score, pillCounter);																			// update grid information
 }
-void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
+void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int keyCode, string &mess, vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter, int &snakeSize, bool &cheatMode, bool &invincible, int &invincibleCounter)
 {
 	// move spot in required direction
 	bool wantsToQuit(int key); // prototype of wants to quit function
@@ -233,7 +253,6 @@ void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key,
 	void eatPill(const char grid[][SIZEX], vector<Item> &snake, Item &pill, int &pillCounter, const bool &cheatMode, bool &invincible, int &invincibleCounter, int &score);
 	void updateGrid(char grid[][SIZEX], const char maze[][SIZEX], vector<Item> &snake, Item &mouse, Item &pill, int &score, int &pillCounter);
 
-	assert(isArrowKey(key));
 	void endProgram();
 
 	// reset message to blank
@@ -242,7 +261,7 @@ void updateGameData(char grid[][SIZEX], const char maze[][SIZEX], const int key,
 	// calculate direction of movement for given keyCode
 	int newX(0), newY(0); // new pos
 
-	setKeyDirection(key, newX, newY, score);
+	setKeyDirection(keyCode, newX, newY, score);
 	newX += snake.front().x;
 	newY += snake.front().y;
 
@@ -393,26 +412,25 @@ void setKeyDirection(const int key, int &dx, int &dy, int &score)
 {
 	// calculate direction indicated by keyCode
 	bool isArrowKey(const int k);
-	assert(isArrowKey(key));
 
 	switch (key) //...depending on the selected keyCode...
 	{
-	case LEFT:   //when LEFT arrow pressed...
-		dx = -1; //decrease the X coordinate
+	case KEY_LEFT: //when LEFT arrow pressed...
+		dx = -1;   //decrease the X coordinate
 		dy = 0;
 		score++;
 		break;
-	case RIGHT:  //when RIGHT arrow pressed...
-		dx = +1; //increase the X coordinate
+	case KEY_RIGHT: //when RIGHT arrow pressed...
+		dx = +1;	//increase the X coordinate
 		dy = 0;
 		score++;
 		break;
-	case UP: // when UP arrow pressed...
+	case KEY_UP: // when UP arrow pressed...
 		dx = 0;
 		dy = -1; // decrease the Y coordinate
 		score++;
 		break;
-	case DOWN: // when DOWN arrow pressed...
+	case KEY_DOWN: // when DOWN arrow pressed...
 		dx = 0;
 		dy = +1; // increase the Y coordinate
 		score++;
@@ -434,13 +452,7 @@ int getKeyPress()
 bool isArrowKey(const int key)
 {
 	// check if the keyCode pressed is an arrow keyCode (also accept 'K', 'M', 'H' and 'P')
-	return (key == LEFT) || (key == RIGHT) || (key == UP) || (key == DOWN);
-}
-bool isCheatKey(const int key)
-{
-
-	// check if the keyCode pressed is cheat keyCode
-	return (key == CHEAT);
+	return (key == KEY_LEFT) || (key == KEY_RIGHT) || (key == KEY_UP) || (key == KEY_DOWN);
 }
 
 //---------------------------------------------------------------------------
