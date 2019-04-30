@@ -120,6 +120,7 @@ int main()
 	initialiseGame(grid, maze, snake, mouse, pill, score, pillCounter); // initialise grid (incl. walls and spot)
 
 	int keyCode(KEY_UP); // current keyCode selected by player
+    int snakeDirection(keyCode); // current direction snake is going
 
 	const chrono::milliseconds TICK_FREQ(800);							 // how often a tick will happen
 	auto lastTickTime(chrono::steady_clock::now() - chrono::seconds(1)); // init with second to spare
@@ -132,8 +133,18 @@ int main()
 		{		
             int kp(toupper(getKeyPress()));
 
-            if (isArrowKey(kp) || kp == KEY_SAVE || kp == KEY_CHEAT || kp == KEY_QUIT) {
+            if (isArrowKey(kp))
+            {
                 keyCode = kp; // assign keypress
+                snakeDirection = kp; // assign direction
+            }
+            else if (kp == KEY_SAVE || kp == KEY_CHEAT || kp == KEY_QUIT)
+            {
+                keyCode = kp; // assign keypress
+            }
+            else // set message to alert of invalid key
+            {
+                message = "INVALID KEY!"; 
             }
 		}
 
@@ -141,7 +152,7 @@ int main()
 
 		if (NOW - lastTickTime >= TICK_FREQ) // check elapsed time
 		{
-			updateGame(grid, maze, keyCode, message, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter);
+			updateGame(grid, maze, snakeDirection, message, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter);
 			checkPowerPill(grid, pill, snake, invincible); // checking to see if there is 2 mice collected
 
 			if (keyCode == KEY_CHEAT && cheatMode) // if the user presses 'C' to deactivate cheat mode
@@ -155,10 +166,6 @@ int main()
 			else if (keyCode == KEY_SAVE) // if user chooses to save game
 			{
 				saveGame(score);
-			}
-			else
-			{
-				message = "INVALID KEY!"; // set 'Invalid keyCode' message
 			}
 
 			lastTickTime = NOW; // log last tick time
