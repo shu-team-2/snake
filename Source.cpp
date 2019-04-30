@@ -122,7 +122,8 @@ int main()
 	int keyCode(KEY_UP); // current keyCode selected by player
     int snakeDirection(keyCode); // current direction snake is going
 
-	const chrono::milliseconds TICK_FREQ(800);							 // how often a tick will happen
+	chrono::milliseconds tickInterval(700);	 // how often a tick will happen
+    chrono::milliseconds MAX_TICK_FREQ(400); // smallest time gap between ticks
 	auto lastTickTime(chrono::steady_clock::now() - chrono::seconds(1)); // init with second to spare
 
 	do // game loop
@@ -150,7 +151,7 @@ int main()
 
 		auto NOW(chrono::steady_clock::now()); // get time now
 
-		if (NOW - lastTickTime >= TICK_FREQ) // check elapsed time
+		if (NOW - lastTickTime >= tickInterval) // check elapsed time
 		{
 			updateGame(grid, maze, snakeDirection, message, snake, mouse, pill, score, pillCounter, snakeSize, cheatMode, invincible, invincibleCounter);
 			checkPowerPill(grid, pill, snake, invincible); // checking to see if there is 2 mice collected
@@ -169,8 +170,10 @@ int main()
 			}
 
 			lastTickTime = NOW; // log last tick time
+            tickInterval -= chrono::milliseconds(50); // speed up snake
+            tickInterval = max(tickInterval, MAX_TICK_FREQ); // limit tick interval
 		}
-	} while (toupper(keyCode) != KEY_QUIT); // while user does not want to quit
+	} while (keyCode != KEY_QUIT); // while user does not want to quit
 
 	renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
 	endProgram();										 // display final message
