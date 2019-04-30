@@ -119,34 +119,34 @@ int main()
 	SetConsoleTitle("FoP 2018-19 - Task 1c - Game Skeleton");
 	initialiseGame(grid, maze, snake, mouse, pill, score, pillCounter); // initialise grid (incl. walls and spot)
 
-	int keyCode(KEY_UP); // current keyCode selected by player
-    int snakeDirection(keyCode); // current direction snake is going
+	int keyCode(KEY_UP);		 // current keyCode selected by player
+	int snakeDirection(keyCode); // current direction snake is going
 
-	chrono::milliseconds tickInterval(700);	 // how often a tick will happen
-    chrono::milliseconds MAX_TICK_FREQ(400); // smallest time gap between ticks
+	chrono::milliseconds tickInterval(700);								 // how often a tick will happen
+	chrono::milliseconds MIN_TICK_INTERVAL(400);						 // smallest time gap between ticks
 	auto lastTickTime(chrono::steady_clock::now() - chrono::seconds(1)); // init with second to spare
 
 	do // game loop
 	{
 		renderGame(grid, message, score, invincible, snake); // display game info, modified grid and messages
 
-		if (_kbhit()) // check key press 
-		{		
-            int kp(toupper(getKeyPress()));
+		if (_kbhit()) // check key press
+		{
+			int kp(toupper(getKeyPress()));
 
-            if (isArrowKey(kp))
-            {
-                keyCode = kp; // assign keypress
-                snakeDirection = kp; // assign direction
-            }
-            else if (kp == KEY_SAVE || kp == KEY_CHEAT || kp == KEY_QUIT)
-            {
-                keyCode = kp; // assign keypress
-            }
-            else // set message to alert of invalid key
-            {
-                message = "INVALID KEY!"; 
-            }
+			if (isArrowKey(kp))
+			{
+				keyCode = kp;		 // assign keypress
+				snakeDirection = kp; // assign direction
+			}
+			else if (kp == KEY_SAVE || kp == KEY_CHEAT || kp == KEY_QUIT)
+			{
+				keyCode = kp; // assign keypress
+			}
+			else // set message to alert of invalid key
+			{
+				message = "INVALID KEY!";
+			}
 		}
 
 		auto NOW(chrono::steady_clock::now()); // get time now
@@ -170,8 +170,10 @@ int main()
 			}
 
 			lastTickTime = NOW; // log last tick time
-            tickInterval -= chrono::milliseconds(50); // speed up snake
-            tickInterval = max(tickInterval, MAX_TICK_FREQ); // limit tick interval
+			if (tickInterval > MIN_TICK_INTERVAL)
+			{
+				tickInterval -= chrono::milliseconds(50); // speed up snake
+			}
 		}
 	} while (keyCode != KEY_QUIT); // while user does not want to quit
 
