@@ -1,4 +1,8 @@
 //include standard libraries
+
+// GROUP SE3_8
+// CHRIS BREWSTER
+//JOSHUA SEXTON-JONES
 #include <iostream>
 #include <iomanip>
 #include <conio.h>
